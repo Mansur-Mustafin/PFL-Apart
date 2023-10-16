@@ -3,9 +3,11 @@ display_piece(empty):- write(' ').
 display_piece(black):- write('b').
 display_piece(white):- write('w').
 
+
 % display_game(+Game_State)
 display_game([CurrentPlayer, Board, _]) :-
 	display_board(Board).
+
 
 % display_board(+Board).
 display_board([H|T]):-
@@ -13,12 +15,14 @@ display_board([H|T]):-
 	display_header(1, Len),
 	draw_board_map([H|T], 1, Len).
 
+
 % description
 % display_header(+Cur, +Len)
 display_header(Cur, Len):-
 	write('    '),
 	display_sequence_letters(Cur, Len),
 	write('   '), draw_between_line(1, Len).
+
 
 % description
 % display_sequence_letters(+Cur, +Len)
@@ -32,6 +36,7 @@ display_sequence_letters(Cur, Len):-
 	Cur1 is Cur + 1,
 	display_sequence_letters(Cur1, Len).
 
+
 % description
 % draw_between_line(+Cur, +Len)
 draw_between_line(Len, Len):-
@@ -41,6 +46,7 @@ draw_between_line(Cur, Len):-
 	write('|---'),
 	Cur1 is Cur + 1,
 	draw_between_line(Cur1, Len).
+
 
 % description
 % draw_number_line(+Board, +CurVal, +Len)
@@ -61,6 +67,7 @@ writeNumber(X):-
 	write(X), write('  '), !.
 writeNumber(X):-
 	write(X), write(' ').
+
 
 % description
 % display_sequence_pieces(+RowOfPieces)

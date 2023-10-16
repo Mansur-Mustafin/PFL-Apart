@@ -32,13 +32,13 @@ createBoard(Board):-
 	appendNTimes(L2, [empty|WhitePieces], 2, Board).
 
 % Create the list with Size - 1 of Pieces, but the lust piece is 'empty'.
-% createListOfPieces(+Size, -List, +Piece)
+% createListOfPieces(+Size, -List, +Piece).
 createListOfPieces(2, _, [empty]).
 createListOfPieces(Size, Piece, [Piece|T]):-
 	Size1 is Size - 1,
 	createListOfPieces(Size1, Piece, T).
 
-% appendNTimes(+OriginList, +ToAppend, +N, -Result):-
+% appendNTimes(+OriginList, +ToAppend, +N, -Result).
 appendNTimes(OriginList, _, 0, OriginList).
 appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	N1 is N - 1,
