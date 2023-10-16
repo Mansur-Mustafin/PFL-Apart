@@ -1,6 +1,6 @@
 # PFL-Apart
 
-Apart is a board-game in which the goal is to distribute your pieces.
+Apart is a board game in which the goal is to distribute all of your pieces.
 
 ### Setup
 
@@ -10,23 +10,23 @@ Apart is a board-game in which the goal is to distribute your pieces.
 ### Key Definitions
 
 - **Line:** An unbroken, straight alignment of same-color pieces, oriented vertically, horizontally, or diagonally.
-- **Length of Line:** A count of pieces constituting a line.
+- **Length of a Line:** The number of pieces constituting the line.
 - **Single Step:** A move to an immediately adjacent square, regardless of direction.
 - **Jump:** A move spanning two or more squares.
 
 ### Gameplay Dynamics
 
-Players alternate turns, initiating with the player controlling the white pieces. Note: The first move of the game cannot engage a continuous jump.
+Players alternate turns, initiating with the player controlling the white pieces. Each player has the opportunity to move one of his pieces one or more times according to the movement rules below. Note that the first move of the game cannot be a continuous jump.
 
-### Tactical Movement
+### Movement rules
 
-- **Direction & Distance:** Pieces shift along their respective line, traveling a distance corresponding to its length.
+- **Direction and Distance:** Pieces shift along one of their respective lines, traveling a distance corresponding to the line's length.
 - **Jump Mechanics:** Pieces can leap over others, capturing any opponent's piece upon landing. Players cannot move their pieces to squares already occupied by another one of their own pieces.
-- **Multijumps:** A piece may execute multiple jumps during a move without landing on its starting square. Engaging in continuous jumps is optional and can be halted at any point.
+- **Continuous jumps:** A piece may execute multiple jumps during a move without landing on the same square twice. Engaging in continuous jumps is optional and can be halted at any point. A single step cannot be included in a sequence of a continuous jump.
 
-### Culmination of the Game
+### End of the game
 
-Victory is achieved when a player successfully places all their pieces non-adjacent to friendly pieces, horizontally, vertically, and diagonally.
+Victory is achieved when a player successfully places all their pieces non-adjacent to friendly pieces, horizontally, vertically, and diagonally. If both players reach this state at the same time, the player who made the move loses.
 
 ### REFERENCES
 For a detailed overview of the rules and gameplay mechanics, visit the following resources:
