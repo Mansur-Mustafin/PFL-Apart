@@ -18,7 +18,7 @@ display_board([H|T]):-
 display_header(Cur, Len):-
 	write('    '),
 	display_sequence_letters(Cur, Len),
-	write('  '), draw_between_line(1, Len).
+	write('   '), draw_between_line(1, Len).
 
 % description
 % display_sequence_letters(+Cur, +Len)
@@ -47,14 +47,20 @@ draw_between_line(Cur, Len):-
 draw_board_map([H], Len, Len):-
 	write(Len), write(' '),
 	display_sequence_pieces(H),
-	write('  '), draw_between_line(1, Len).
+	write('   '), draw_between_line(1, Len).
 
 draw_board_map([H|T], CurVal, Len):-
-	write(CurVal), write(' '),
+	writeNumber(CurVal),
 	display_sequence_pieces(H),
-	write('  '), draw_between_line(1, Len),
+	write('   '), draw_between_line(1, Len),
 	CurVal1 is CurVal + 1,
 	draw_board_map(T, CurVal1, Len).
+
+writeNumber(X):-
+	X < 10,
+	write(X), write('  '), !.
+writeNumber(X):-
+	write(X), write(' ').
 
 % description
 % display_sequence_pieces(+RowOfPieces)
