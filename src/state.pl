@@ -19,10 +19,11 @@ switch_player(player_white, player_black).
 switch_player(player_black, player_white).
 
 
+% Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
 createBoard(Board):-
 	write('Please enter a size of board between 0 and 26: '),
-	read_namber(Size), clear_buffer,
+	read_namber(Size),
 	SizeOfEmpty is Size - 4,
 	createListOfPieces(Size, white, WhitePieces),
 	createListOfPieces(Size, black, BlackPieces),
@@ -31,6 +32,7 @@ createBoard(Board):-
 	appendNTimes(L1, [empty|EmptyPieces], SizeOfEmpty, L2),
 	appendNTimes(L2, [empty|WhitePieces], 2, Board).
 
+
 % Create the list with Size - 1 of Pieces, but the lust piece is 'empty'.
 % createListOfPieces(+Size, -List, +Piece).
 createListOfPieces(2, _, [empty]).
@@ -38,8 +40,12 @@ createListOfPieces(Size, Piece, [Piece|T]):-
 	Size1 is Size - 1,
 	createListOfPieces(Size1, Piece, T).
 
+
+% append N times the ToAppend to OriginList.
 % appendNTimes(+OriginList, +ToAppend, +N, -Result).
 appendNTimes(OriginList, _, 0, OriginList).
 appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	N1 is N - 1,
 	appendNTimes(OriginList, ToAppend, N1, T).
+
+
