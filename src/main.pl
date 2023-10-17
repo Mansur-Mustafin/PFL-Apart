@@ -2,6 +2,7 @@
 :- consult('state.pl').
 
 play :-
+	display_titel,
 	createBoard(Board),
 	game_state(Player, Board, Visited),
 	display_game([Player, Board, Visited]),

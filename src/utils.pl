@@ -26,7 +26,7 @@ clear_buffer:-
 
 
 % This function receive the letter and transform to number
-% Ex: A -> 0, B -> 1
+% Ex: A -> 0, B -> 1, ...
 % get_index(+Letter, -Code).
 get_index(Letter, Code):-
 	char_code(Letter, Code1),
@@ -48,7 +48,7 @@ set_value_at(Board, RowN, ColN, Value, NewBoard):-
     set_nth(Board, RowN, NewRow, NewBoard).
 
 
-% Set Value in List at Index 
+% Set Value in List at Index. Ex: List[Index] = Value
 % set_nth(+List, +Index, +Value, -ResultList)
 set_nth([_|T], 0, Value, [Value|T]).
 set_nth([H|T], Index, Value, [H|Rest]):-

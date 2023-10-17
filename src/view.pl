@@ -6,6 +6,7 @@ display_piece(white):- write('w').
 
 % display_game(+Game_State)
 display_game([CurrentPlayer, Board, _]) :-
+	display_player(CurrentPlayer),
 	display_board(Board).
 
 
@@ -79,3 +80,19 @@ display_sequence_pieces([Piece|T]):-
 	display_piece(Piece),
 	write(' '),
 	display_sequence_pieces(T).
+
+%
+%
+display_titel:-
+	write(' ================='), nl,
+	write(' |               |'), nl,
+	write(' |   A P A R T   |'), nl,
+	write(' |               |'), nl,
+	write(' ================='), nl.
+
+%
+% 
+display_player(player_white):-	
+	write('Tern of player with white pieces'), nl.
+display_player(player_black):-	
+	write('Tern of player with black pieces'), nl.

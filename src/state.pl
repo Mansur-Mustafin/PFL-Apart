@@ -52,7 +52,6 @@ appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 % 
 % step(+Board, +Origin, +Destino, -NewBoard).
 step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
-	write(OriginCol-OriginRow-DestRow-DestCol), nl,
 	get_value_at(Board, OriginRow, OriginCol, OriginValue),
 	OriginValue \= empty, %TODO: check the player.
 	get_value_at(Board, DestRow, DestCol, DestValue),
