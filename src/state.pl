@@ -22,15 +22,15 @@ switch_player(player_black, player_white).
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
 createBoard(Board):-
-	write('Please enter a size of board between 0 and 26: '),
+	write('Please enter a size of board between 0 and 26: '), nl,
 	read_namber(Size),
 	SizeOfEmpty is Size - 4,
 	createListOfPieces(Size, white, WhitePieces),
 	createListOfPieces(Size, black, BlackPieces),
 	createListOfPieces(Size, empty, EmptyPieces),
-	appendNTimes([], [empty|BlackPieces], 2, L1),
+	appendNTimes([], [empty|WhitePieces], 2, L1),
 	appendNTimes(L1, [empty|EmptyPieces], SizeOfEmpty, L2),
-	appendNTimes(L2, [empty|WhitePieces], 2, Board).
+	appendNTimes(L2, [empty|BlackPieces], 2, Board).
 
 
 % Create the list with Size - 1 of Pieces, but the lust piece is 'empty'.
@@ -48,4 +48,18 @@ appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	N1 is N - 1,
 	appendNTimes(OriginList, ToAppend, N1, T).
 
+
+% 
+% step(+Board, +Origin, +Destino, -NewBoard).
+step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
+	write(OriginCol-OriginRow-DestRow-DestCol), nl,
+	get_value_at(Board, OriginRow, OriginCol, OriginValue),
+	OriginValue \= empty, %TODO: check the player.
+	get_value_at(Board, DestRow, DestCol, DestValue),
+	DestValue = empty, !,
+	set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
+	set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
+
+step(Board, OriginX-OriginY, DestX-DestY, NewBoard):-
+	write('The destination is not empty'), nl.
 

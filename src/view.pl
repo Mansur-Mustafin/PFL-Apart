@@ -19,7 +19,7 @@ display_board([H|T]):-
 % description
 % display_header(+Cur, +Len)
 display_header(Cur, Len):-
-	write('    '),
+	write('     '),
 	display_sequence_letters(Cur, Len),
 	write('   '), draw_between_line(1, Len).
 

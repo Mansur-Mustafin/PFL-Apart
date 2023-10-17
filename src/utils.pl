@@ -1,3 +1,5 @@
+:- use_module(library(lists)).
+
 % TODO: issue with 2 Enters.
 % read_number(X).
 read_namber(X):-
@@ -21,3 +23,36 @@ clear_buffer:-
 	get_char(C),
 	C = '\n',
 	!.
+
+
+% This function receive the letter and transform to number
+% Ex: A -> 0, B -> 1
+% get_index(+Letter, -Code).
+get_index(Letter, Code):-
+	char_code(Letter, Code1),
+	Code is Code1 - 65.
+
+
+% basicly: Matrix[RowN][ColN] -> Value
+% get_value_at(+Matrix, +RowN, +ColN, -Value)
+get_value_at(Board, RowN, ColN, Value):-
+    nth0(RowN, Board, Row),
+    nth0(ColN, Row, Value).
+
+
+% Set Value in Matrix at (RowN, ColN).
+% set_value_at(+Matrix, +RowN, +ColN, +Value, -ResultMatrix)
+set_value_at(Board, RowN, ColN, Value, NewBoard):-
+    nth0(RowN, Board, Row),
+    set_nth(Row, ColN, Value, NewRow),
+    set_nth(Board, RowN, NewRow, NewBoard).
+
+
+% Set Value in List at Index 
+% set_nth(+List, +Index, +Value, -ResultList)
+set_nth([_|T], 0, Value, [Value|T]).
+set_nth([H|T], Index, Value, [H|Rest]):-
+    Index > 0,
+    NewIndex is Index - 1,
+    set_nth(T, NewIndex, Value, Rest).
+
