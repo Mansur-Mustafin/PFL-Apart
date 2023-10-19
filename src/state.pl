@@ -22,12 +22,16 @@ switch_player(player_black, player_white).
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
 createBoard(Board):-
-	write('Please enter a size of board between 0 and 26: '), nl,
-	read_namber(Size),
-	SizeOfEmpty is Size - 4,
-	createListOfPieces(Size, white, WhitePieces),
-	createListOfPieces(Size, black, BlackPieces),
-	createListOfPieces(Size, empty, EmptyPieces),
+	% TODO: check the between() 4 < N < 26.
+	write('Please enter a size of board columns between 4 and 26: '), nl,
+	read_namber(NumCol),
+	write('Please enter a size of board rows grater then 6: '), nl,
+	read_namber(NumRow),
+
+	SizeOfEmpty is NumRow - 4,
+	createListOfPieces(NumCol, white, WhitePieces),
+	createListOfPieces(NumCol, black, BlackPieces),
+	createListOfPieces(NumCol, empty, EmptyPieces),
 	appendNTimes([], [empty|WhitePieces], 2, L1),
 	appendNTimes(L1, [empty|EmptyPieces], SizeOfEmpty, L2),
 	appendNTimes(L2, [empty|BlackPieces], 2, Board).

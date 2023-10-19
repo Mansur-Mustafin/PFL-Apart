@@ -73,3 +73,9 @@ set_nth([H|T], Index, Value, [H|Rest]):-
     NewIndex is Index - 1,
     set_nth(T, NewIndex, Value, Rest).
 
+
+% Return the numbers of rows and cilumns in matrix.
+% shape(+Matrix, -NumberOfRows, -NumberOfColumns).
+shape([H|T], R, C):-
+	length([H|T], R),
+	length(H, C).
