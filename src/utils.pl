@@ -6,15 +6,31 @@ read_namber(X):-
 	read_namber_aux(0, false, X).
 
 read_namber_aux(Acc, _, X):-
-	get_code(C),
-	C >= 48,						% '0'
-	C =< 57,						% '9'
+	peek_code(C),
+	C >= 48,							% '0'
+	C =< 57,
+	get_code(_),						% '9'
 	!,
 	Acc1 is 10 * Acc + (C - 48),
 	read_namber_aux(Acc1, true, X).
 
+read_namber_aux(0, false, _):-
+	write('Please enter number'), nl,
+	clear_buffer,
+	read_namber(X).
+
+
 read_namber_aux(X, true, X):-
+	peek_char(C),
+	C = '\n',
 	clear_buffer.
+
+read_namber_aux(X, true, X):-
+	peek_char(C),
+	C \= '\n',
+	write('Please enter number'), nl,
+	clear_buffer,
+	read_namber(X).
 
 
 % clear buffer/0
