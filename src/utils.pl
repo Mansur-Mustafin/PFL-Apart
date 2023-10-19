@@ -1,6 +1,6 @@
 :- use_module(library(lists)).
 
-% TODO: issue with 2 Enters.
+
 % read_number(X).
 read_namber(X):-
 	repeat,
@@ -74,7 +74,7 @@ set_nth([H|T], Index, Value, [H|Rest]):-
     set_nth(T, NewIndex, Value, Rest).
 
 
-% Return the numbers of rows and cilumns in matrix.
+% Return the numbers of rows and columns in matrix.
 % shape(+Matrix, -NumberOfRows, -NumberOfColumns).
 shape([H|T], R, C):-
 	length([H|T], R),

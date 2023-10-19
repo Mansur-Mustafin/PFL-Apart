@@ -98,6 +98,6 @@ display_titel:-
 % Write whose turn it is now. 
 % display_player(+Player)
 display_player(player_white):-	
-	write('Tern of player with white pieces'), nl.
+	write('Turn of player playing white'), nl.
 display_player(player_black):-	
-	write('Tern of player with black pieces'), nl.
+	write('Turn of player playing black'), nl.
