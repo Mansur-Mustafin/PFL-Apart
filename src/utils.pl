@@ -1,9 +1,11 @@
 :- use_module(library(lists)).
 
-% TODO: issue with 2 Enters.
+
 % read_number(X).
 read_namber(X):-
-	read_namber_aux(0, false, X).
+	repeat,
+	read_namber_aux(0, false, X),
+	!.
 
 read_namber_aux(Acc, _, X):-
 	peek_code(C),
@@ -16,8 +18,7 @@ read_namber_aux(Acc, _, X):-
 
 read_namber_aux(0, false, _):-
 	write('Please enter number'), nl,
-	clear_buffer,
-	read_namber(X).
+	clear_buffer, fail.
 
 
 read_namber_aux(X, true, X):-
@@ -30,7 +31,7 @@ read_namber_aux(X, true, X):-
 	C \= '\n',
 	write('Please enter number'), nl,
 	clear_buffer,
-	read_namber(X).
+	fail.
 
 
 % clear buffer/0
@@ -72,3 +73,9 @@ set_nth([H|T], Index, Value, [H|Rest]):-
     NewIndex is Index - 1,
     set_nth(T, NewIndex, Value, Rest).
 
+
+% Return the numbers of rows and columns in matrix.
+% shape(+Matrix, -NumberOfRows, -NumberOfColumns).
+shape([H|T], R, C):-
+	length([H|T], R),
+	length(H, C).
