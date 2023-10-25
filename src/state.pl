@@ -12,6 +12,8 @@
 % game_state(+Player, +Board, +VisitedList)
 game_state(player_white, Board, []). % TODO: como eu meto aqui a board?
 
+my_piece(player_black, black).
+my_piece(player_white, white).
 
 % Switches the player that is going to make the next move
 % switch_player(+CurrentPlayer, -NextPlayer)

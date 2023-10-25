@@ -44,6 +44,7 @@ draw_between_line(Len, Len):-
 	write('|---|'), nl.
 
 draw_between_line(Cur, Len):-
+	Cur < Len,
 	write('|---'),
 	Cur1 is Cur + 1,
 	draw_between_line(Cur1, Len).

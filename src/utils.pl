@@ -56,7 +56,6 @@ get_value_at(Board, RowN, ColN, Value):-
     nth0(RowN, Board, Row),
     nth0(ColN, Row, Value).
 
-
 % Set Value in Matrix at (RowN, ColN).
 % set_value_at(+Matrix, +RowN, +ColN, +Value, -ResultMatrix)
 set_value_at(Board, RowN, ColN, Value, NewBoard):-
@@ -79,3 +78,7 @@ set_nth([H|T], Index, Value, [H|Rest]):-
 shape([H|T], R, C):-
 	length([H|T], R),
 	length(H, C).
+
+
+my_abs(X,X) :- X >= 0, !.
+my_abs(X,Y) :- Y is -X.
