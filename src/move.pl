@@ -14,14 +14,16 @@ valid_move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
     get_value_at(Board, NewPosRow, NewPosCol, Dest),
     \+ my_piece(Player, Dest),
 
-    member(Visited, NewPosCol-NewPosRow),
+    member(Visited, NewPosCol-NewPosRow).
     
-    
+dfs(CurrRow-CurrCol, NewRow-CurrCol, vertical) :- NewRow is CurrRow + 1.
+dfs(CurrRow-CurrCol, NewRow-CurrCol, vertical) :- NewRow is CurrRow - 1.
+
 
 
 % get_direction(+CurrPosition, NewPosition, -Direction, -Distance).
-get_direction(CurrCol-CurrRow, CurrCol-NewRow, vertical, Distance) :- Distance is CurrRow - NewRow, abs(Distance).
-get_direction(CurrCol-CurrRow, NewCol-CurrRow, horizontal, Distance) :- Distance is CurrCol - NewCol, abs(Distance).
+get_direction(CurrCol-CurrRow, CurrCol-NewRow, vertical, Distance) :- Distance is abs(CurrRow - NewRow).
+get_direction(CurrCol-CurrRow, NewCol-CurrRow, horizontal, Distance) :- Distance is abs(CurrCol - NewCol).
 get_direction(CurrCol-CurrRow, NewCol-NewRow, diagTopLeft, Distance) :- 
     abs(CurrCol - NewCol) =:= abs(CurrRow - NewRow),
     (NewCol - CurrCol) * (NewRow - CurrRow) > 0,
