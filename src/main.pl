@@ -1,6 +1,7 @@
 :- consult('view.pl').
 :- consult('state.pl').
 :- consult('move.pl').
+:- consult('utils.pl').
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     write('Todo'), nl.
@@ -11,7 +12,8 @@ move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-
     write('Todo'), nl.
 
 game_over(Player-Board-Visited, Winner) :-
-    write('Todo'), nl.
+    shape(Board, Rows, Columns).
+    check_win_player(Board, white).
 
 game_loop(Player, Board, Visited) :-
     display_game([Player, Board, Visited]),

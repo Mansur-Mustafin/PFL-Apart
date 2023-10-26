@@ -1,6 +1,4 @@
 % Verificar outra funcao para dar import sem ser consult
-:- consult('state.pl').
-:- consult('utils.pl').
 
 % valid_move(+GameState, ?Position)
 valid_move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
@@ -63,6 +61,50 @@ explore_end(End, Board, CurrPosCol-CurrPosRow, Direction, Player, N) :-
     explore(CurrPosCol-CurrPosRow, NewCurrPosCol-NewCurrPosRow, Direction, End),
     explore_end(End, Board, NewCurrPosCol-NewCurrPosRow, Direction, Player, N1),
     N is N1 + 1, !.
-    
 
-    
+% =====================================================================================
+
+
+% check_win_player(+Board, white).
+% true = is the first column?
+check_win_player([H1, H2| T], Piece):-
+    check_win_player_lists(H1, H2, Piece, true),
+    check_win_player([H2|T], Piece).
+
+
+check_win_player([H1| []], Piece):-
+    check_single_row(H1, Piece).
+
+
+% Checking the first element of the lists
+check_win_player_lists([H1, H2|T1], [H3, H4|T2], Piece, true):-
+    \+ ((
+        same_piece(H1, H2, Piece);
+        same_piece(H1, H4, Piece);
+        same_piece(H1, H3, Piece)
+    )),
+    check_win_player_lists([H1, H2|T1], [H3, H4|T2], Piece, false).
+
+
+check_win_player_lists([_, H2, H3|T1], [H4, H5, H6|T2], Piece, false):-
+    \+ ((
+        same_piece(H2, H3, Piece);
+        same_piece(H2, H4, Piece);
+        same_piece(H2, H5, Piece);
+        same_piece(H2, H6, Piece)
+    )),
+    check_win_player_lists([H2, H3|T1], [H5, H6|T2], Piece, false).
+
+
+check_win_player_lists([_, H2|[]], [H3, H4|[]], Piece, false):-
+    \+ ((
+        same_piece(H2, H3, Piece);
+        same_piece(H2, H4, Piece)
+    )).
+
+
+% Just check the single row.
+check_single_row([_], _).
+check_single_row([H1, H2|T], Piece):-
+    \+ same_piece(H1, H2, Piece),
+    check_single_row([H2|T], Piece).

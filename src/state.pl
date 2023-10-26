@@ -1,4 +1,3 @@
-:- consult('utils.pl').
 
 /* 	Player is the player currently making the move. 
 	Board keeps which piece is in each cell of the board. The possible values are:
@@ -10,10 +9,13 @@
 		visited: cells that have been visited in the current move (in a continuous jump).
 */
 % game_state(+Player, +Board, +VisitedList)
-game_state(player_white, Board, []). % TODO: como eu meto aqui a board?
+game_state(player_white, _Board, []). % TODO: 
 
 my_piece(player_black, black).
 my_piece(player_white, white).
+
+same_piece(white, white, white).
+same_piece(black, black, black).
 
 % Switches the player that is going to make the next move
 % switch_player(+CurrentPlayer, -NextPlayer)
@@ -55,7 +57,7 @@ appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	appendNTimes(OriginList, ToAppend, N1, T).
 
 
-% 
+/*
 % step(+Board, +Origin, +Destino, -NewBoard).
 step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
 	get_value_at(Board, OriginRow, OriginCol, OriginValue),
@@ -67,4 +69,4 @@ step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
 
 step(Board, OriginX-OriginY, DestX-DestY, NewBoard):-
 	write('The destination is not empty'), nl.
-
+*/
