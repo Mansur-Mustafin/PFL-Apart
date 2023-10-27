@@ -2,6 +2,7 @@
 :- consult('state.pl').
 :- consult('move.pl').
 :- consult('utils.pl').
+:- use_module(library(between)).
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     write('Todo'), nl.
