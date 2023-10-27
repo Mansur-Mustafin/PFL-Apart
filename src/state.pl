@@ -57,7 +57,7 @@ appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	appendNTimes(OriginList, ToAppend, N1, T).
 
 
-/*
+
 % step(+Board, +Origin, +Destino, -NewBoard).
 step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
 	get_value_at(Board, OriginRow, OriginCol, OriginValue),
@@ -69,4 +69,4 @@ step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
 
 step(Board, OriginX-OriginY, DestX-DestY, NewBoard):-
 	write('The destination is not empty'), nl.
-*/
+

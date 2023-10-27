@@ -13,7 +13,7 @@ valid_move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
     \+ my_piece(Player, Dest),
 
     member(Visited, NewPosCol-NewPosRow).
-    
+
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.
 explore(CurrCol-SameRow, NewCol-SameRow, horizontal, left) :- NewCol is CurrCol - 1.
@@ -62,8 +62,10 @@ explore_end(End, Board, CurrPosCol-CurrPosRow, Direction, Player, N) :-
     explore_end(End, Board, NewCurrPosCol-NewCurrPosRow, Direction, Player, N1),
     N is N1 + 1, !.
 
-% =====================================================================================
 
+% =====================================================================================
+%                                CHECK IF 'X' WINS
+% =====================================================================================
 
 % check_win_player(+Board, white).
 % true = is the first column?
@@ -108,3 +110,33 @@ check_single_row([_], _).
 check_single_row([H1, H2|T], Piece):-
     \+ same_piece(H1, H2, Piece),
     check_single_row([H2|T], Piece).
+
+% =====================================================================================
+%                                FIND WHO WIN
+% =====================================================================================
+
+has_won(Board, Player, true):- check_win_player(Board, Player), !.
+has_won(_, _, false).
+
+% Cases if one of players wins.
+determine_winner(_, true, false, player_white).
+determine_winner(_, false, true, player_black).
+
+% Case if no winners TODO: erase if we want to fail this.
+determine_winner(_, false, false, none).
+
+% Aqui aquela regra se os 2 ganharam, quem fez movimento perca.
+determine_winner(player_white, true, true, player_black).
+determine_winner(player_black, true, true, player_white).
+
+
+% =====================================================================================
+%                                CASE IF HAS WINNER
+% =====================================================================================
+
+end_game(player_white):-
+    write('[WHITE] The player with white pieces wins!'), nl.
+
+end_game(player_black):-
+    write('[BLACK] The player with black pieces wins!'), nl.
+
