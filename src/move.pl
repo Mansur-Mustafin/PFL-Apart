@@ -12,7 +12,10 @@ valid_move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
     get_value_at(Board, NewPosRow, NewPosCol, Dest),
     \+ my_piece(Player, Dest),
 
-    member(Visited, NewPosCol-NewPosRow).
+    \+ member(Visited, NewPosCol-NewPosRow),
+
+    get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, Direction, Distance),
+    get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance).
 
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.

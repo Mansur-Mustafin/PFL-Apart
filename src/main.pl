@@ -5,7 +5,18 @@
 :- use_module(library(between)).
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
-    write('Todo'), nl.
+    shape(Board, Rows, Columns),
+    Rows1 is Rows - 1,
+    Columns1 is Columns - 1,
+    setof(OrigCol-OrigRow-NewCol-NewRow, (Player,Board,Visited,Rows1,Columns1)^(
+        between(0, Rows1, OrigRow),
+        between(0, Columns1, OrigCol),
+        between(0, Rows1, NewRow),
+        between(0, Columns1, NewCol),
+        valid_move(Player-Board-Visited, OrigCol-OrigRow-NewCol-NewRow)
+        ), ValidMoves),
+    write(ValidMoves).
+
 
 move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited) :-
     % vlaid_move,
@@ -36,7 +47,7 @@ game_loop(Player, Board, Visited) :-
     OriginRowIndex is OriginRow - 1,
     DestRowIndex is DestRow - 1,
 
-    % valid_move(Player-Board-Visited, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex),
+    valid_move(Player-Board-Visited, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex),
 
     % Call step predicate with user input
     step(Board, OrigColIndex-OriginRowIndex, DestColIndex-DestRowIndex, NewBoard),
