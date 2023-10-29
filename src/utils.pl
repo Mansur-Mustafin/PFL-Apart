@@ -1,5 +1,56 @@
 :- use_module(library(lists)).
 
+read_pos(Col-Row) :-
+	write('Enter a valid position in this format Column-Row: '), nl,
+	read_collumn(Col),
+	read_dash,
+	read_row(Row),
+	!.
+
+read_pos(none-none) :-
+	peek_char(Char),
+	Char = '\n',
+	get_char(_), !.
+
+read_pos(Col-Row) :-
+	clear_buffer,
+	read_pos(Col-Row).
+
+read_collumn(Col) :-
+	peek_code(Char),
+	validate_letter(Char, Letter),
+	Col is Letter - 65, 
+	get_code(_), !.
+
+validate_letter(Letter, Letter) :-
+	between(65, 90, Letter).
+
+validate_letter(Char, Letter) :-
+	between(97, 122, Char),
+	Letter is Char - 32.
+
+read_dash :-
+	peek_char(Char),
+	Char = '-',
+	get_char(_).
+
+read_row(Row) :-
+	read_row_aux(0, false, X),
+	Row is X - 1.
+
+read_row_aux(Acc, _, X):-
+	peek_code(C),
+	C >= 48,							% '0'
+	C =< 57,
+	get_code(_),						% '9'
+	!,
+	Acc1 is 10 * Acc + (C - 48),
+	read_row_aux(Acc1, true, X).
+
+read_row_aux(X, true, X):-
+	peek_char(C),
+	C = '\n',
+	clear_buffer.
 
 % read_number(X).
 read_namber(X):-

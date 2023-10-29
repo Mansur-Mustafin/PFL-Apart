@@ -9,19 +9,22 @@
 		visited: cells that have been visited in the current move (in a continuous jump).
 */
 % game_state(+Player, +Board, +VisitedList)
-game_state(player_white, _Board, []). % TODO: 
+game_state(player_white-player_black, _Board, []). % TODO: 
+
+is_human(player_white).
+is_human(player_black).
 
 my_piece(player_black, black).
 my_piece(player_white, white).
+my_piece(pc_white, white).
+my_piece(pc_black, black).
 
 same_piece(white, white, white).
 same_piece(black, black, black).
 
 % Switches the player that is going to make the next move
 % switch_player(+CurrentPlayer, -NextPlayer)
-switch_player(player_white, player_black).
-switch_player(player_black, player_white).
-
+switch_player(P1-P2, P2-P1).
 
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)

@@ -3,6 +3,20 @@
 :- consult('move.pl').
 :- consult('utils.pl').
 :- use_module(library(between)).
+:- use_module(library(random)).
+
+
+read_move(Player-_-_, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex) :-
+    is_human(Player),
+    read_pos(OrigColIndex-OriginRowIndex),
+    read_pos(DestColIndex-DestRowIndex).
+
+read_move(Player-Board-Visited, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex) :-
+    \+ is_human(Player),
+    valid_moves(Player-Board-Visited, Player, ValidMoves),
+    random_member(OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex, ValidMoves).
+
+
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     shape(Board, Rows, Columns),
@@ -19,9 +33,25 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
 
 
 move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited) :-
-    % vlaid_move,
-    % mover peca
-    write('Todo'), nl.
+    % Se move não igual a acabar
+    valid_move()
+    get_value_at(Board, OriginRow, OriginCol, OriginValue),
+    OriginValue \= empty, %TODO: check the player.
+    get_value_at(Board, DestRow, DestCol, DestValue),
+    DestValue = empty, !,
+    set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
+    set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
+
+move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited) :-
+    % Se move igual a acabar
+    valid_move()
+    get_value_at(Board, OriginRow, OriginCol, OriginValue),
+    OriginValue \= empty, %TODO: check the player.
+    get_value_at(Board, DestRow, DestCol, DestValue),
+    DestValue = empty, !,
+    set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
+    set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
+
 
 % If no winners so Winner => fali, but we can do Winner = none
 game_over(Player-Board-Visited, Winner):-
@@ -31,30 +61,17 @@ game_over(Player-Board-Visited, Winner):-
     \+ end_game(Winner).
 
 
-game_loop(Player, Board, Visited) :-
+game_loop(Player-NextPlayer, Board, Visited) :-
     display_game([Player, Board, Visited]),
-    valid_moves(Player-Board-Visited, Player, ValidMoves),
-    % Change this block of code to get a move ------------------------------------------------------
-    write('Enter origin coordinates (Col-Row): '), nl,
-    read(OriginCol-OriginRow),
-    get_index(OriginCol, OrigColIndex), 
 
-    % Ask user for destination coordinates
-    write('Enter destination coordinates (Col-Row): '), nl,
-    read(DestCol-DestRow),
-    get_index(DestCol, DestColIndex),
-
-    OriginRowIndex is OriginRow - 1,
-    DestRowIndex is DestRow - 1,
-
-    valid_move(Player-Board-Visited, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex),
+    read_move(Player, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex),
 
     % Call step predicate with user input
     step(Board, OrigColIndex-OriginRowIndex, DestColIndex-DestRowIndex, NewBoard),
 
     % ------------------------------------------------------------------------------------------
 
-    % move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited),
+    move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited),
     % change player if visited is empty?
     game_over(Player-NewBoard-Visited, Winner), write('line 47'), nl,
     game_loop(Player, NewBoard, Visited).   % To test
@@ -65,7 +82,7 @@ game_over(_ , _) :-
     play, !.
 
 play :-
-	display_titel,
-	createBoard(Board),
-	game_state(Player, Board, Visited),
-    game_loop(Player, Board, Visited).
+    display_titel,
+    createBoard(Board),
+    game_state(Player-NextPlayer, Board, Visited),
+    game_loop(Player-NextPlayer, Board, Visited).
