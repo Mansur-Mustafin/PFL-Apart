@@ -21,7 +21,7 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     write(ValidMoves).
 
 
-move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-NewBoard-[]) :-
+move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
     is_human(Player),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     write('Stop'), nl.
@@ -37,7 +37,7 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
     
     set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
-    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard).
+    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % TODO: put visited
 
 
 move(Player-NextPlayer-Board-Visited, _-_-_-_, _-_-_) :-
