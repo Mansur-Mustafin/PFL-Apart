@@ -37,7 +37,7 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
     
     set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
-    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % TODO: put visited
+    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % Use empty
 
 
 move(Player-NextPlayer-Board-Visited, _-_-_-_, _-_-_) :-

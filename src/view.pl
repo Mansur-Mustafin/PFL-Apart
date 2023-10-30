@@ -2,12 +2,19 @@
 display_piece(empty):- write(' ').
 display_piece(black):- write('b').
 display_piece(white):- write('w').
+display_piece(visited):- write('x').
+display_piece(white_selected):- write('W').
+display_piece(black_selected):- write('B').
+
+selected_piece(black, black_selected).
+selected_piece(white, white_selected).
 
 
 % display_game(+Game_State)
-display_game([CurrentPlayer, Board, _]) :-
+display_game([CurrentPlayer, Board, Visited]) :-
 	display_player(CurrentPlayer),
-	display_board(Board).
+	process_visited(Board, Visited, true, NewBoard),
+	display_board(NewBoard).
 
 
 % display_board(+Board).
@@ -102,3 +109,17 @@ display_player(player_white):-
 	write('Turn of player playing white'), nl.
 display_player(player_black):-	
 	write('Turn of player playing black'), nl.
+
+
+% true = The first element on Board = selected.
+process_visited(Board, [], _, Board).
+
+process_visited(Board, [Col-Row|T], true, NewBoard):-
+	get_value_at(Board, Row, Col, Value),
+	selected_piece(Value, SelectedValue),
+	set_value_at(Board, Row, Col, SelectedValue, TempBoard),
+	process_visited(TempBoard, T, false, NewBoard).
+
+process_visited(Board, [Col-Row|T], false, NewBoard):-
+	process_visited(Board, T, false, TempBoard),
+	set_value_at(TempBoard, Row, Col, visited, NewBoard).
