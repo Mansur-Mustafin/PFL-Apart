@@ -4,7 +4,7 @@
 :- consult('utils.pl').
 :- use_module(library(between)).
 :- use_module(library(random)).
-
+:- use_module(library(lists)).
 
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
@@ -24,7 +24,7 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
 move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
     is_human(Player),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
-    write('Stop'), nl.
+    write('You chose to stop your movement. It\'s the next player\'s turn now.'), nl.
 
 
 move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
@@ -40,9 +40,9 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
     set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % Use empty
 
 
-move(Player-NextPlayer-Board-Visited, _-_-_-_, _-_-_) :-
+move(Player-NextPlayer-Board-Visited, _, _) :-
     is_human(Player),
-    write('Move is not valid'), nl,
+    write('Oops! That move is not valid. Please try again.'), nl,
     game_loop(Player-NextPlayer, Board, Visited).
 
 
@@ -53,24 +53,24 @@ game_over(Player-Board-_):-
     \+ end_game(Winner).
 
 game_over(_) :-
-    write('Do you want play more?'), nl,
+    write('The game has ended. Do you want to play again?'), nl,
     play, !.
 
 % case if we need choose the piece witch will move.
 game_loop(Player-NextPlayer, Board, []) :-
     is_human(Player),
     display_game([Player, Board, []]),
-    write('Choose witch peice that you want to move'), nl,
+    write('Please select the piece you wish to move.'), nl,
     read_pos(OrigColIndex-OriginRowIndex),
 
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
-    
+
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
     display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
 
-    write('Choose in map where you want to go.'), nl,
+    write('Now, choose your destination on the board.'), nl,
     read_pos(NewPosCol-NewPosRow),
     
     move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 

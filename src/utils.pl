@@ -1,4 +1,3 @@
-:- use_module(library(lists)).
 
 read_pos(Col-Row) :-
 	write('Enter a valid position in this format Column-Row: '), nl,
