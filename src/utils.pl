@@ -52,10 +52,11 @@ read_row_aux(X, true, X):-
 	C = '\n',
 	clear_buffer.
 
-% read_number(X).
-read_namber(X):-
+% read_number(X, Low, Up). TODO: 
+read_namber(X, Low, Up):-
 	repeat,
 	read_namber_aux(0, false, X),
+	between(Low, Up, X),
 	!.
 
 read_namber_aux(Acc, _, X):-

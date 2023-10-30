@@ -1,21 +1,21 @@
 % Verificar outra funcao para dar import sem ser consult
 
 % valid_move(+GameState, ?Position)
-valid_move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
+valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
     get_value_at(Board, CurrPosRow, CurrPosCol, Orig),
     my_piece(Player, Orig),
 
-    % TODO: verificar que nao vai para uma casa que já visitou
-    % TODO: Numero de casa que andou faz sentido?
+    % TODO: pode ir so 1 vez por 1.
     % Note: Precisa de gerar os moves possiveis
 
     get_value_at(Board, NewPosRow, NewPosCol, Dest),
     \+ my_piece(Player, Dest),
 
-    \+ member(Visited, NewPosCol-NewPosRow),
+    \+ member(NewPosCol-NewPosRow, [CurrPosCol-CurrPosRow|T]),
 
     get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, Direction, Distance),
     get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance).
+
 
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.

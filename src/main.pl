@@ -6,17 +6,6 @@
 :- use_module(library(random)).
 
 
-read_move(Player-_-_, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex) :-
-    is_human(Player),
-    read_pos(OrigColIndex-OriginRowIndex),
-    read_pos(DestColIndex-DestRowIndex).
-
-read_move(Player-Board-Visited, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex) :-
-    \+ is_human(Player),
-    valid_moves(Player-Board-Visited, Player, ValidMoves),
-    random_member(OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex, ValidMoves).
-
-
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     shape(Board, Rows, Columns),
@@ -32,54 +21,66 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     write(ValidMoves).
 
 
-move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited) :-
-    % Se move não igual a acabar
-    valid_move()
-    get_value_at(Board, OriginRow, OriginCol, OriginValue),
-    OriginValue \= empty, %TODO: check the player.
-    get_value_at(Board, DestRow, DestCol, DestValue),
-    DestValue = empty, !,
-    set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
-    set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
-
-move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited) :-
-    % Se move igual a acabar
-    valid_move()
-    get_value_at(Board, OriginRow, OriginCol, OriginValue),
-    OriginValue \= empty, %TODO: check the player.
-    get_value_at(Board, DestRow, DestCol, DestValue),
-    DestValue = empty, !,
-    set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
-    set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
+move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
+    is_human(Player),
+    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
+    write('Stop'), nl.
 
 
-% If no winners so Winner => fali, but we can do Winner = none
-game_over(Player-Board-Visited, Winner):-
+move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+        CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
+        Player-NextPlayer-NewBoard-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]) :-
+
+    is_human(Player),
+    valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
+
+    get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
+    
+    set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
+    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % TODO: put visited
+
+
+move(Player-NextPlayer-Board-Visited, _-_-_-_, _-_-_) :-
+    is_human(Player),
+    write('Move is not valid'), nl,
+    game_loop(Player-NextPlayer, Board, Visited).
+
+
+game_over(Player-Board-_):-
     has_won(Board, white, WhiteWins),
     has_won(Board, black, BlackWins),
     determine_winner(Player, WhiteWins, BlackWins, Winner),
     \+ end_game(Winner).
 
-
-game_loop(Player-NextPlayer, Board, Visited) :-
-    display_game([Player, Board, Visited]),
-
-    read_move(Player, OrigColIndex-OriginRowIndex-DestColIndex-DestRowIndex),
-
-    % Call step predicate with user input
-    step(Board, OrigColIndex-OriginRowIndex, DestColIndex-DestRowIndex, NewBoard),
-
-    % ------------------------------------------------------------------------------------------
-
-    move(Player-Board-Visited, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewPlayer-NewBoard-NewVisited),
-    % change player if visited is empty?
-    game_over(Player-NewBoard-Visited, Winner), write('line 47'), nl,
-    game_loop(Player, NewBoard, Visited).   % To test
-    % game_loop(NewPlayer, NewBoard, NewVisited).
-
-game_over(_ , _) :-
+game_over(_) :-
     write('Do you want play more?'), nl,
     play, !.
+
+% case if we need choose the piece witch will move.
+game_loop(Player-NextPlayer, Board, []) :-
+    is_human(Player),
+    display_game([Player, Board, []]),
+    write('Choose witch peice that you want to move'), nl,
+    read_pos(OrigColIndex-OriginRowIndex),
+
+    game_loop(Player-NextPlayer, Board, [OrigColIndex-OriginRowIndex]).
+
+
+game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
+    is_human(Player),
+    display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
+
+    write('Choose in map where you want to go.'), nl,
+    read_pos(NewPosCol-NewPosRow),
+    
+    move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+            CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
+            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
+
+    game_over(Player-NewBoard-NewVisited),
+    
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
+
 
 play :-
     display_titel,

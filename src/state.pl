@@ -9,7 +9,15 @@
 		visited: cells that have been visited in the current move (in a continuous jump).
 */
 % game_state(+Player, +Board, +VisitedList)
-game_state(player_white-player_black, _Board, []). % TODO: 
+game_state(FirstPlayer-SecondPlayer, _Board, []):-
+	write('Choose mode:'), nl,
+	write('Player vs Player  [1]'), nl,
+	write('Player vs PC 	 [2]'), nl,
+	write('PC vs Player 	 [3]'), nl,
+	write('PC vs PC  		 [4]'), nl,
+	read_number(1, 4, Lvl),
+	createPlayer(Lvl, FirstPlayer-SecondPlayer).
+
 
 is_human(player_white).
 is_human(player_black).
@@ -26,14 +34,19 @@ same_piece(black, black, black).
 % switch_player(+CurrentPlayer, -NextPlayer)
 switch_player(P1-P2, P2-P1).
 
+createPlayer(1, player_white-player_black).
+createPlayer(2, player_white-pc_black).
+createPlayer(3, pc_white-player_black).
+createPlayer(4, pc_white-pc_black).
+
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
 createBoard(Board):-
 	% TODO: check the between() 4 < N < 26.
 	write('Please enter a size of board columns between 4 and 26: '), nl,
-	read_namber(NumCol),
+	read_namber(4, 26, NumCol),
 	write('Please enter a size of board rows grater then 6: '), nl,
-	read_namber(NumRow),
+	read_namber(6, 50, NumRow),
 
 	SizeOfEmpty is NumRow - 4,
 	createListOfPieces(NumCol, white, WhitePieces),
@@ -58,18 +71,4 @@ appendNTimes(OriginList, _, 0, OriginList).
 appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	N1 is N - 1,
 	appendNTimes(OriginList, ToAppend, N1, T).
-
-
-
-% step(+Board, +Origin, +Destino, -NewBoard).
-step(Board, OriginCol-OriginRow, DestCol-DestRow, NewBoard):-
-	get_value_at(Board, OriginRow, OriginCol, OriginValue),
-	OriginValue \= empty, %TODO: check the player.
-	get_value_at(Board, DestRow, DestCol, DestValue),
-	DestValue = empty, !,
-	set_value_at(Board, DestRow, DestCol, OriginValue, TempBoard),
-	set_value_at(TempBoard, OriginRow, OriginCol, DestValue, NewBoard).
-
-step(Board, OriginX-OriginY, DestX-DestY, NewBoard):-
-	write('The destination is not empty'), nl.
 
