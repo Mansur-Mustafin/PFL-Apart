@@ -17,6 +17,16 @@ valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosC
     get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance).
 
 
+valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
+    \+ is_none(Col),
+    get_value_at(Board, Row, Col, Value),
+    my_piece(Player, Value),
+    game_loop(Player-NextPlayer, Board, [Col-Row]).
+
+valid_piece_choice(Player-NextPlayer, Board, _):-
+    write('Please choose again.'), nl,
+    game_loop(Player-NextPlayer, Board, []).
+
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.
 explore(CurrCol-SameRow, NewCol-SameRow, horizontal, left) :- NewCol is CurrCol - 1.

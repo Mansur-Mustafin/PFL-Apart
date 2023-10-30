@@ -63,7 +63,14 @@ game_loop(Player-NextPlayer, Board, []) :-
     write('Choose witch peice that you want to move'), nl,
     read_pos(OrigColIndex-OriginRowIndex),
 
-    game_loop(Player-NextPlayer, Board, [OrigColIndex-OriginRowIndex]).
+    valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
+
+
+% case se burro escolheu peca nao dela ou nem peca
+game_loop(Player-NextPlayer, Board, []) :-
+    is_human(Player),
+    write('Invalid piece chosen. Please choose again.'), nl,
+    game_loop(Player-NextPlayer, Board, []).
 
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-

@@ -18,6 +18,7 @@ game_state(FirstPlayer-SecondPlayer, _Board, []):-
 	read_namber(Lvl, 1, 4),
 	createPlayer(Lvl, FirstPlayer-SecondPlayer).
 
+is_none(none).
 
 is_human(player_white).
 is_human(player_black).
