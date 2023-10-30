@@ -11,11 +11,11 @@
 % game_state(+Player, +Board, +VisitedList)
 game_state(FirstPlayer-SecondPlayer, _Board, []):-
 	write('Choose mode:'), nl,
-	write('Player vs Player  [1]'), nl,
-	write('Player vs PC 	 [2]'), nl,
-	write('PC vs Player 	 [3]'), nl,
-	write('PC vs PC  		 [4]'), nl,
-	read_number(1, 4, Lvl),
+	write('Player vs Player..[1]'), nl,
+	write('Player vs PC......[2]'), nl,
+	write('PC vs Player......[3]'), nl,
+	write('PC vs PC..........[4]'), nl,
+	read_namber(Lvl, 1, 4),
 	createPlayer(Lvl, FirstPlayer-SecondPlayer).
 
 
@@ -44,9 +44,9 @@ createPlayer(4, pc_white-pc_black).
 createBoard(Board):-
 	% TODO: check the between() 4 < N < 26.
 	write('Please enter a size of board columns between 4 and 26: '), nl,
-	read_namber(4, 26, NumCol),
+	read_namber(NumCol, 4, 26),
 	write('Please enter a size of board rows grater then 6: '), nl,
-	read_namber(6, 50, NumRow),
+	read_namber(NumRow, 6, 50),
 
 	SizeOfEmpty is NumRow - 4,
 	createListOfPieces(NumCol, white, WhitePieces),
