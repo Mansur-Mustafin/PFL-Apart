@@ -39,7 +39,7 @@ has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
 
 has_move(Player-NextPlayer, Board, _) :-
-    write('You have no moves'),
+    write('You have no moves'), nl,
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     game_loop(NewCurPlayer-NewNextPlayer, Board, []).
 
