@@ -24,7 +24,7 @@ valid_moves_player(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
     shape(Board, Rows, Columns),
     Rows1 is Rows - 1,
     Columns1 is Columns - 1,
-    setof(NewCol-NewRow, (T, CurrCol, CurrRow, Player, Board, Rows1, Columns1)^(
+    findall(NewCol-NewRow, (
         between(0, Rows1, NewRow),
         between(0, Columns1, NewCol),
         valid_move(Player-Board-[CurrCol-CurrRow | T], CurrCol-CurrRow-NewCol-NewRow)
@@ -41,7 +41,6 @@ check_one_move_turn(Player-NextPlayer-_-T, CurrPosCol-CurrPosRow-NewPosCol-NewPo
 
 
 move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
-    is_human(Player),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     write('You chose to stop your movement. It\'s the next player\'s turn now.'), nl.
 
@@ -50,7 +49,6 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
         NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
 
-    is_human(Player),
     valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
 
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
@@ -85,6 +83,12 @@ game_loop(Player-NextPlayer, Board, []) :-
 
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
 
+game_loop(Player-NextPlayer, Board, []) :-
+    is_easy_pc(Player),
+    findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces),
+    random_member(PieceCol-PieceRow, ValidPieces),
+
+    game_loop(Player-NextPlayer, Board, [PieceCol-PieceRow]).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
@@ -103,6 +107,33 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     
     game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
 
+game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow | T]) :-
+    is_easy_pc(Player),
+    display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
+
+    write('Insert anything to continue: '), nl,
+
+    peek_char(_), clear_buffer,
+
+    valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow | T], Player, ValidMoves),
+
+    pc_first_move([CurrPosCol-CurrPosRow | T], ValidMoves, ValidMoves1),
+
+    random_member(NewPosCol-NewPosRow, ValidMoves1),
+
+    write('Valid Moves1: '), nl,
+    write(ValidMoves1), nl,
+
+    move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+            CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
+            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
+
+    game_over(Player-NewBoard-NewVisited),
+    
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
+
+pc_first_move([_], ValidMoves, ValidMoves).
+pc_first_move([_, _ | _], ValidMoves, [none-none | ValidMoves]).
 
 play :-
     display_titel,
