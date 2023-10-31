@@ -25,11 +25,20 @@ valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
     \+ is_none(Col),
     get_value_at(Board, Row, Col, Value),
     my_piece(Player, Value),
+    valid_moves_player(Player-Board-[Col-Row], Player, [_ | _]),
     game_loop(Player-NextPlayer, Board, [Col-Row]).
 
 valid_piece_choice(Player-NextPlayer, Board, _):-
     write('Please choose again.'), nl,
     game_loop(Player-NextPlayer, Board, []).
+
+has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
+    valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
+
+has_move(Player-NextPlayer, Board, _) :-
+    write('You have no moves'),
+    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
+    game_loop(NewCurPlayer-NewNextPlayer, Board, []).
 
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.
@@ -78,7 +87,6 @@ explore_end(End, Board, CurrPosCol-CurrPosRow, Direction, Player, N) :-
     explore(CurrPosCol-CurrPosRow, NewCurrPosCol-NewCurrPosRow, Direction, End),
     explore_end(End, Board, NewCurrPosCol-NewCurrPosRow, Direction, Player, N1),
     N is N1 + 1, !.
-
 
 % =====================================================================================
 %                                CHECK IF 'X' WINS

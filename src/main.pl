@@ -20,6 +20,15 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
         ), ValidMoves),
     write(ValidMoves).
 
+valid_moves_player(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+    shape(Board, Rows, Columns),
+    Rows1 is Rows - 1,
+    Columns1 is Columns - 1,
+    setof(NewCol-NewRow, (T, CurrCol, CurrRow, Player, Board, Rows1, Columns1)^(
+        between(0, Rows1, NewRow),
+        between(0, Columns1, NewCol),
+        valid_move(Player-Board-[CurrCol-CurrRow | T], CurrCol-CurrRow-NewCol-NewRow)
+        ), ValidMoves).
 
 % Se Primeiro turno e move de distancia 1
 check_one_move_turn(Player-NextPlayer-_-[], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-_-[]) :-
@@ -80,6 +89,8 @@ game_loop(Player-NextPlayer, Board, []) :-
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
     display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
+
+    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]),
 
     write('Now, choose your destination on the board.'), nl,
     read_pos(NewPosCol-NewPosRow),
