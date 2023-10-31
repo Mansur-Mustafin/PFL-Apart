@@ -6,6 +6,11 @@
 :- use_module(library(random)).
 :- use_module(library(lists)).
 
+find_all_pieces(Player, Board, ValidPieces) :-
+    findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces).
+
+valid_turns(Player-Board-Visited, Player, ValidTurns) :-
+    find_all_pieces(Player, Board, ValidPieces).
 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     shape(Board, Rows, Columns),
