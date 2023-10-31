@@ -9,9 +9,34 @@
 find_all_pieces(Player, Board, ValidPieces) :-
     findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces).
 
-valid_turns(Player-Board-Visited, Player, ValidTurns) :-
-    find_all_pieces(Player, Board, ValidPieces).
+valid_turns_robot(Player-Board, Player, ValidTurns) :-
+    find_all_pieces(Player, Board, ValidPieces),
+    maplist(element_to_list, ValidPieces, ValidPieces1),
+    valid_turns_aux(Player-Board, ValidPieces1, [], ValidTurns),
+    write(ValidTurns).
 
+valid_turns_aux(_-_, [], ValidTurns, ValidTurns):- !.
+valid_turns_aux(Player-Board, CurrMoves, Acc, ValidTurns) :-
+    get_next_moves(Player-Board, CurrMoves, [], NewCurrMoves),
+    append(NewCurrMoves, Acc, Acc1),
+    write('New Curr Moves: '), nl,
+    write(NewCurrMoves), nl,
+    write('Acc1: '), nl,
+    write(Acc1), nl,
+    valid_turns_aux(Player-Board, NewCurrMoves, Acc1, ValidTurns).
+
+get_next_moves(_-_, [], NewMoves, NewMoves).
+get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
+    valid_moves_player(Player-Board-CurrMove, Player, NextJumps),
+    get_next_jumps(CurrMove, NextJumps, [], NewCurrMoves),
+    append(NewCurrMoves, Acc, Acc1),
+    get_next_moves(Player-Board, T, Acc1, NewMoves).
+
+get_next_jumps(CurrMove, [], NewMoves, NewMoves).
+get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
+    get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
+    
+ 
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     shape(Board, Rows, Columns),
     Rows1 is Rows - 1,
@@ -29,7 +54,8 @@ valid_moves_player(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
     shape(Board, Rows, Columns),
     Rows1 is Rows - 1,
     Columns1 is Columns - 1,
-    setof(NewCol-NewRow, (T, CurrCol, CurrRow, Player, Board, Rows1, Columns1)^(
+    % NOTE: check if setof is really necessary
+    findall(NewCol-NewRow, (T, CurrCol, CurrRow, Player, Board, Rows1, Columns1)^(
         between(0, Rows1, NewRow),
         between(0, Columns1, NewCol),
         valid_move(Player-Board-[CurrCol-CurrRow | T], CurrCol-CurrRow-NewCol-NewRow)

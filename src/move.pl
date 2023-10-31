@@ -2,8 +2,9 @@
 
 % valid_move(+GameState, ?Position)
 valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
-    get_value_at(Board, CurrPosRow, CurrPosCol, Orig),
-    my_piece(Player, Orig),
+    % Precisamos destas duas linhas?
+    %get_value_at(Board, CurrPosRow, CurrPosCol, Orig),
+    %my_piece(Player, Orig),
 
     % TODO: pode ir so 1 vez por 1.
     % Note: Precisa de gerar os moves possiveis

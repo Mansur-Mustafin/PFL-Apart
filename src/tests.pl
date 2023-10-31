@@ -4,16 +4,22 @@
 :- consult('move.pl').
 :- consult('utils.pl').
 
-get_board(Board) :-
+get_board1(Board) :-
     Board = [   [empty, black, black, black, empty],
                 [empty, black, black, black, empty],
                 [empty, empty, empty, empty, empty],
                 [empty, empty, empty, empty, empty],
                 [empty, empty, empty, empty, empty],
-                [empty, empty, empty, empty, empty],
+                [empty, white, empty, empty, empty],
                 [empty, empty, empty, empty, empty],
                 [empty, white, white, white, empty],
                 [empty, white, white, white, empty]
+    ].
+
+get_board2(Board) :-
+    Board = [   
+                [empty, empty, empty, empty],
+                [empty, white, white, empty]
     ].
 
 test_check_win_player:-
