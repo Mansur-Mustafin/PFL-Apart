@@ -28,7 +28,7 @@ check_valid_piece(Player, Board, Col-Row) :-
     valid_moves_player(Player-Board-[Col-Row], Player, [_ | _]).
 
 valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
-    is_none(Col),
+    \+ is_none(Col),
     check_valid_piece(Player, Board, Col-Row),
     game_loop(Player-NextPlayer, Board, [Col-Row]).
 
@@ -40,7 +40,7 @@ has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
 
 has_move(Player-NextPlayer, Board, _) :-
-    write('You have no moves'),
+    write('You have no moves'), nl,
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     game_loop(NewCurPlayer-NewNextPlayer, Board, []).
 

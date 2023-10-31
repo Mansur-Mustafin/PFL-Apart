@@ -23,10 +23,14 @@ is_none(none).
 is_human(player_white).
 is_human(player_black).
 
+is_easy_pc(easy_pc_white).
+is_easy_pc(easy_pc_black).
+
+
 my_piece(player_black, black).
 my_piece(player_white, white).
-my_piece(pc_white, white).
-my_piece(pc_black, black).
+my_piece(easy_pc_black, black).
+my_piece(easy_pc_white, white).
 
 same_piece(white, white, white).
 same_piece(black, black, black).
@@ -36,9 +40,9 @@ same_piece(black, black, black).
 switch_player(P1-P2, P2-P1).
 
 createPlayer(1, player_white-player_black).
-createPlayer(2, player_white-pc_black).
-createPlayer(3, pc_white-player_black).
-createPlayer(4, pc_white-pc_black).
+createPlayer(2, player_white-easy_pc_black).
+createPlayer(3, easy_pc_white-player_black).
+createPlayer(4, easy_pc_white-easy_pc_black).
 
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
