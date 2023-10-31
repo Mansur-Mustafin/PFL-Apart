@@ -41,7 +41,8 @@ check_one_move_turn(Player-NextPlayer-_-T, CurrPosCol-CurrPosRow-NewPosCol-NewPo
 
 
 move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
-    is_human(Player),
+    % Check this
+    %is_human(Player),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     write('You chose to stop your movement. It\'s the next player\'s turn now.'), nl.
 
@@ -50,7 +51,8 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
         NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
 
-    is_human(Player),
+    % Check this
+    %is_human(Player),
     valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
 
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
@@ -85,6 +87,15 @@ game_loop(Player-NextPlayer, Board, []) :-
 
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
 
+game_loop(Player-NextPlayer, Board, []) :-
+    is_easy_pc(Player),
+    write('Line 92'), nl,
+    findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces),
+    write('Line 94'), nl,
+    random_select(PieceCol-PieceRow, ValidPieces, _Rest),
+    write('Line 96'), nl,
+    write(PieceCol-PieceRow), nl,
+    game_loop(Player-NextPlayer, Board, [PieceCol-PieceRow]).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
@@ -94,6 +105,31 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
 
     write('Now, choose your destination on the board.'), nl,
     read_pos(NewPosCol-NewPosRow),
+    
+    move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+            CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
+            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
+
+    game_over(Player-NewBoard-NewVisited),
+    
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
+
+game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow | T]) :-
+    is_easy_pc(Player),
+    display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
+
+    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]),
+
+    valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow | T], Player, ValidMoves),
+
+    write(CurrPosCol-CurrPosRow), nl,
+    nl, write(ValidMoves), nl,
+
+    write('Insert anything to continue: '), nl,
+
+    peek_char(_), clear_buffer,
+
+    random_select(NewPosCol-NewPosRow, [none-none | ValidMoves], _),
     
     move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 

@@ -21,11 +21,14 @@ check_valid_jump([_ | []], _).
 check_valid_jump([_, _ | _], Distance) :-
     Distance > 1.
 
-valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
-    \+ is_none(Col),
+check_valid_piece(Player, Board, Col-Row) :-
     get_value_at(Board, Row, Col, Value),
     my_piece(Player, Value),
-    valid_moves_player(Player-Board-[Col-Row], Player, [_ | _]),
+    valid_moves_player(Player-Board-[Col-Row], Player, [_ | _]).
+
+valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
+    \+ is_none(Col),
+    check_valid_piece(Player, Board, Col-Row),
     game_loop(Player-NextPlayer, Board, [Col-Row]).
 
 valid_piece_choice(Player-NextPlayer, Board, _):-
