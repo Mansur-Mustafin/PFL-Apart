@@ -14,8 +14,12 @@ valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosC
     \+ member(NewPosCol-NewPosRow, [CurrPosCol-CurrPosRow|T]),
 
     get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, Direction, Distance),
-    get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance).
+    get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance),
+    check_valid_jump([CurrPosCol-CurrPosRow|T], Distance).
 
+check_valid_jump([_ | []], _).
+check_valid_jump([_, _ | _], Distance) :-
+    Distance > 1.
 
 valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
     \+ is_none(Col),

@@ -21,6 +21,16 @@ valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     write(ValidMoves).
 
 
+% Se Primeiro turno e move de distancia 1
+check_one_move_turn(Player-NextPlayer-_-[], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-_-[]) :-
+    get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, _, 1),
+    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer).
+
+
+% Qualquer move sem ser o de cima
+check_one_move_turn(Player-NextPlayer-_-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, Player-NextPlayer-_-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]).
+
+
 move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
     is_human(Player),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
@@ -29,7 +39,7 @@ move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-
 
 move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
-        Player-NextPlayer-NewBoard-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]) :-
+        NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
 
     is_human(Player),
     valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
@@ -37,7 +47,8 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
     
     set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
-    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard). % Use empty
+    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard), % Use empty
+    check_one_move_turn(Player-NextPlayer-Board-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-NewBoard-NewVisited).
 
 
 move(Player-NextPlayer-Board-Visited, _, _) :-
