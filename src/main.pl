@@ -2,6 +2,8 @@
 :- consult('state.pl').
 :- consult('move.pl').
 :- consult('utils.pl').
+:- consult('greedy_f.pl').
+:- consult('tests.pl').
 :- use_module(library(between)).
 :- use_module(library(random)).
 :- use_module(library(lists)).

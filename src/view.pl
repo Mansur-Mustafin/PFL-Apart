@@ -60,7 +60,7 @@ draw_between_line(Cur, Len):-
 % Display the Board with all pieces.
 % draw_number_line(+Board, +CurVal, +NRow, +NCol).
 draw_board_map([H], NRows, NRows, NCol):-
-	write(NRows), write(' '),
+	writeNumber(NRows),
 	display_sequence_pieces(H),
 	write('   '), draw_between_line(1, NCol).
 
