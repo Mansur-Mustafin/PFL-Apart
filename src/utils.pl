@@ -134,4 +134,11 @@ shape([H|T], R, C):-
 my_abs(X,X) :- X >= 0, !.
 my_abs(X,Y) :- Y is -X.
 
-element_to_list(El, [El]).
+my_map(_, [], _, []).
+my_map(Pred, [H|T], Board, [NewValue|ResultList]):-
+    G =.. [Pred, H, Board, NewValue], 
+    G,
+    my_map(Pred, T, Board, ResultList).
+    
+element_to_list(Col-Row, Board, [Col-Row]-NewBoard):-
+    set_value_at(Board, Row, Col, empty, NewBoard).

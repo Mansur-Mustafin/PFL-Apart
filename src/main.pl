@@ -11,19 +11,24 @@ find_all_pieces(Player, Board, ValidPieces) :-
 
 valid_turns_robot(Player-Board, Player, ValidTurns) :-
     find_all_pieces(Player, Board, ValidPieces),
-    maplist(element_to_list, ValidPieces, ValidPieces1),
-    valid_turns_aux(Player-Board, ValidPieces1, [], ValidTurns),
+    valid_turns_aux(Player-Board, ValidPieces, [], Answer),
+
+    maplist(reverse, Answer, ValidTurns),
+    % valid_turns_aux(Player-Board, ValidPieces1, [], ValidTurns),
     write(ValidTurns).
 
-valid_turns_aux(_-_, [], ValidTurns, ValidTurns):- !.
-valid_turns_aux(Player-Board, CurrMoves, Acc, ValidTurns) :-
+valid_turns_aux(_-_, [], Answer, Answer). 
+valid_turns_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
+    set_value_at(Board, Row, Col, empty, NewBoard),
+    valid_turns_piece(Player-NewBoard, [[Col-Row]], [], ValidTurns),
+    append(ValidTurns, Acc, Acc1),
+    valid_turns_aux(Player-Board, T, Acc1, Answer).
+
+valid_turns_piece(_-_, [], ValidTurns, ValidTurns):- !.
+valid_turns_piece(Player-Board, CurrMoves, Acc, ValidTurns) :-
     get_next_moves(Player-Board, CurrMoves, [], NewCurrMoves),
     append(NewCurrMoves, Acc, Acc1),
-    write('New Curr Moves: '), nl,
-    write(NewCurrMoves), nl,
-    write('Acc1: '), nl,
-    write(Acc1), nl,
-    valid_turns_aux(Player-Board, NewCurrMoves, Acc1, ValidTurns).
+    valid_turns_piece(Player-Board, NewCurrMoves, Acc1, ValidTurns).
 
 get_next_moves(_-_, [], NewMoves, NewMoves).
 get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
@@ -35,7 +40,6 @@ get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
 get_next_jumps(CurrMove, [], NewMoves, NewMoves).
 get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
     get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
-    
  
 valid_moves(Player-Board-Visited, Player, ValidMoves) :-
     shape(Board, Rows, Columns),
@@ -141,8 +145,6 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow | T]) :-
     is_easy_pc(Player),
     display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
-
-    write('Insert anything to continue: '), nl,
 
     peek_char(_), clear_buffer,
 

@@ -5,21 +5,35 @@
 :- consult('utils.pl').
 
 get_board1(Board) :-
-    Board = [   [empty, black, black, black, empty],
-                [empty, black, black, black, empty],
-                [empty, empty, empty, empty, empty],
-                [empty, empty, empty, empty, empty],
-                [empty, empty, empty, empty, empty],
-                [empty, white, empty, empty, empty],
-                [empty, empty, empty, empty, empty],
-                [empty, white, white, white, empty],
-                [empty, white, white, white, empty]
+    Board = [   [empty, black, black, black, empty], % 0
+                [empty, black, black, black, empty], % 1
+                [empty, empty, empty, empty, empty], % 2
+                [empty, empty, empty, empty, empty], % 3
+                [empty, empty, empty, empty, empty], % 4
+                [empty, white, empty, empty, empty], % 5
+                [empty, empty, empty, empty, empty], % 6
+                [empty, white, white, white, empty], % 7
+                [empty, white, white, white, empty]  % 8
     ].
 
 get_board2(Board) :-
     Board = [   
                 [empty, empty, empty, empty],
                 [empty, white, white, empty]
+    ].
+
+
+get_board3(Board) :-
+    Board = [   [empty, black, black, black, black, black, black, black, black, empty], % 0
+                [empty, black, black, black, black, black, black, black, black, empty], % 1
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 2
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 3
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 4
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 5
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 6
+                [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty], % 7
+                [empty, white, white, white, white, white, white, white, white, empty], % 8
+                [empty, white, white, white, white, white, white, white, white, empty]  % 9
     ].
 
 test_check_win_player:-
