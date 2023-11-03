@@ -142,3 +142,10 @@ my_map(Pred, [H|T], Board, [NewValue|ResultList]):-
     
 element_to_list(Col-Row, Board, [Col-Row]-NewBoard):-
     set_value_at(Board, Row, Col, empty, NewBoard).
+
+add_end_turn(L, [none-none | L]).
+
+get_board_index(Col-Row, RealCol-RealRow) :-
+	Col1 is Col + 65,
+	char_code(RealCol, Col1),
+	RealRow is Row + 1.

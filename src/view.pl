@@ -127,3 +127,20 @@ process_visited(Board, [Col-Row|T], true, NewBoard):-
 process_visited(Board, [Col-Row|T], false, NewBoard):-
 	process_visited(Board, T, false, TempBoard),
 	set_value_at(TempBoard, Row, Col, visited, NewBoard).
+
+% Display the sequence of moves that the computer made
+display_pc_move(Player, _-_, none-none) :-
+	write('Player '),
+	my_piece(Player, Piece),
+	write(Piece),
+	write(' stoped moving').
+
+display_pc_move(Player, CurrCol-CurrRow, NewCol-NewRow) :-
+	get_board_index(CurrCol-CurrRow, PrintCurrCol-PrintCurrRow),
+	get_board_index(NewCol-NewRow, PrintNewCol-PrintNewRow),
+	write('Player '),
+	my_piece(Player, Piece),
+	write(Piece),
+	write(' moved the piece on '), write(PrintCurrCol-PrintCurrRow),
+	write(' to '), write(PrintNewCol-PrintNewRow), nl.
+
