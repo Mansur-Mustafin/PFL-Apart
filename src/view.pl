@@ -5,7 +5,9 @@ display_piece(white):- write('w').
 display_piece(visited):- write('x').
 display_piece(white_selected):- write('W').
 display_piece(black_selected):- write('B').
-display_piece(valid):- write('V').
+display_piece(valid):- write('o').
+display_piece(valid_eat):- write('O').
+
 
 selected_piece(black, black_selected).
 selected_piece(white, white_selected).
@@ -62,7 +64,7 @@ draw_between_line(Cur, Len):-
 % Display the Board with all pieces.
 % draw_number_line(+Board, +CurVal, +NRow, +NCol).
 draw_board_map([H], NRows, NRows, NCol):-
-	write(NRows), write(' '),
+	writeNumber(NRows),
 	display_sequence_pieces(H),
 	write('   '), draw_between_line(1, NCol).
 
@@ -143,7 +145,5 @@ process_valid_moves([ValidCol-ValidRow | T], Board, NewBoard) :-
 	process_valid_moves(T, NextBoard, NewBoard).
 
 process_valid_moves([ValidCol-ValidRow | T], Board, NewBoard) :-
-	get_value_at(Board, ValidRow, ValidCol, Value),
-	selected_piece(Value, SelectedValue),
-	set_value_at(Board, ValidRow, ValidCol, SelectedValue, NextBoard),
+	set_value_at(Board, ValidRow, ValidCol, valid_eat, NextBoard),
 	process_valid_moves(T, NextBoard, NewBoard).

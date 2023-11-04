@@ -76,4 +76,3 @@ appendNTimes(OriginList, _, 0, OriginList).
 appendNTimes(OriginList, ToAppend, N, [ToAppend|T]):-
 	N1 is N - 1,
 	appendNTimes(OriginList, ToAppend, N1, T).
-

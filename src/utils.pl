@@ -1,19 +1,19 @@
-
-read_pos(Col-Row) :-
+read_pos(none-none, false).
+read_pos(Col-Row, true) :-
 	write('Enter a valid position in this format Column-Row: '), nl,
 	read_collumn(Col),
 	read_dash,
 	read_row(Row),
 	!.
 
-read_pos(none-none) :-
+read_pos(none-none, true) :-
 	peek_char(Char),
 	Char = '\n',
 	get_char(_), !.
 
-read_pos(Col-Row) :-
+read_pos(Col-Row, true) :-
 	clear_buffer,
-	read_pos(Col-Row).
+	read_pos(Col-Row, true).
 
 read_collumn(Col) :-
 	peek_code(Char),

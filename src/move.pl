@@ -35,13 +35,10 @@ valid_piece_choice(Player-NextPlayer, Board, _):-
     write('Please choose again.'), nl,
     game_loop(Player-NextPlayer, Board, []).
 
-has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
+has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], true) :-
     valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
 
-has_move(Player-NextPlayer, Board, _) :-
-    write('You have no moves'), nl,
-    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
-    game_loop(NewCurPlayer-NewNextPlayer, Board, []).
+has_move(Player-NextPlayer, Board, _, false).
 
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.
@@ -147,24 +144,24 @@ has_won(Board, Player, true):- check_win_player(Board, Player), !.
 has_won(_, _, false).
 
 % Cases if one of players wins.
-determine_winner(_, true, false, player_white).
-determine_winner(_, false, true, player_black).
+determine_winner(_, true, false, white).
+determine_winner(_, false, true, black).
 
 % Case if no winners TODO: erase if we want to fail this.
 determine_winner(_, false, false, none).
 
 % Aqui aquela regra se os 2 ganharam, quem fez movimento perca.
-determine_winner(player_white, true, true, player_black).
-determine_winner(player_black, true, true, player_white).
+determine_winner(white, true, true, black).
+determine_winner(black, true, true, white).
 
 
 % =====================================================================================
 %                                CASE IF HAS WINNER
 % =====================================================================================
 
-end_game(player_white):-
+print_winner(white):-
     write('[WHITE] The player with white pieces wins!'), nl.
 
-end_game(player_black):-
+print_winner(black):-
     write('[BLACK] The player with black pieces wins!'), nl.
 

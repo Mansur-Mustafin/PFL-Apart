@@ -64,56 +64,62 @@ move(Player-NextPlayer-Board-Visited, _, _) :-
     game_loop(Player-NextPlayer, Board, Visited).
 
 
-game_over(Player-Board-_):-
+game_over(Player-Board-_, Winner):-
     has_won(Board, white, WhiteWins),
     has_won(Board, black, BlackWins),
-    determine_winner(Player, WhiteWins, BlackWins, Winner),
-    \+ end_game(Winner).
+    my_piece(Player, Piece),
+    determine_winner(Piece, WhiteWins, BlackWins, Winner).
 
-game_over(_) :-
+end_game(Board, none, Board) :- !.
+end_game(Board, Winner, NewBoard) :-
+    print_winner(Winner),
     repeat,
     write('The game has ended. Do you want to play again? (y/n)'), nl,
-    get_char(C), clear_buffer,
-    check_replay(C).
+    peek_char(C), clear_buffer,
+    check_replay(Board, C, NewBoard), !.
 
-check_replay(y) :-
+check_replay(_, y, _) :-
     play.
 
-check_replay(n) :-
-    write('Thank you for playing!'), nl.
+check_replay(_, n, []) :-
+    write('Thank you for playing!'), nl, !.
 
-% case if we need choose the piece witch will move.
+% case if we need choose the piece witch will move. 
+% maybe move game_over here?
+
+game_loop(_-_, [], _).
+
 game_loop(Player-NextPlayer, Board, []) :-
     is_human(Player),
     display_game([Player, Board, []]),
     write('Please select the piece you wish to move.'), nl,
-    read_pos(OrigColIndex-OriginRowIndex),
-
+    read_pos(OrigColIndex-OriginRowIndex, true),
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
 
 game_loop(Player-NextPlayer, Board, []) :-
     is_easy_pc(Player),
     findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces),
     random_member(PieceCol-PieceRow, ValidPieces),
-
     game_loop(Player-NextPlayer, Board, [PieceCol-PieceRow]).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
     display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
 
-    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]),
+    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], HasMove),
 
     write('Now, choose your destination on the board.'), nl,
-    read_pos(NewPosCol-NewPosRow),
+    read_pos(NewPosCol-NewPosRow, HasMove),
     
     move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    game_over(Player-NewBoard-NewVisited),
-    
-    game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
+    game_over(Player-NewBoard-NewVisited, Winner),
+
+    end_game(NewBoard, Winner, NewBoard1),
+
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow | T]) :-
     is_easy_pc(Player),
@@ -129,16 +135,15 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow | T]) :-
 
     random_member(NewPosCol-NewPosRow, ValidMoves1),
 
-    write('Valid Moves1: '), nl,
-    write(ValidMoves1), nl,
-
     move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    game_over(Player-NewBoard-NewVisited),
+    game_over(Player-NewBoard-NewVisited, Winner),
+
+    end_game(NewBoard, Winner, NewBoard1),
     
-    game_loop(NewCurPlayer-NewNextPlayer, NewBoard, NewVisited).
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited).
 
 pc_first_move([_], ValidMoves, ValidMoves).
 pc_first_move([_, _ | _], ValidMoves, [none-none | ValidMoves]).
