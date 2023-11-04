@@ -2,9 +2,6 @@
 
 % valid_move(+GameState, ?Position)
 valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
-    get_value_at(Board, CurrPosRow, CurrPosCol, Orig),
-    my_piece(Player, Orig),
-
     % TODO: pode ir so 1 vez por 1.
     % Note: Precisa de gerar os moves possiveis
 
@@ -17,7 +14,14 @@ valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosC
     get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Distance),
     check_valid_jump([CurrPosCol-CurrPosRow|T], Distance).
 
-check_valid_jump([_ | []], _).
+check_valid_jump([_ | []], _) :- !.
+
+% TODO: Onde estava o cut?
+check_valid_jump([SecondCol-SecondRow, FirstCol-FirstRow], Distance1) :-
+    Distance1 > 1, !,
+    get_direction(SecondCol-SecondRow, FirstCol-FirstRow, _, Distance),
+    Distance > 1.
+
 check_valid_jump([_, _ | _], Distance) :-
     Distance > 1.
 
@@ -66,8 +70,10 @@ get_direction(CurrCol-CurrRow, NewCol-NewRow, diagTopRight, Distance) :-
 
 % get_number_of_pieces(+Board, +CurrPosCol-CurrPosRow, +Direction, +Player, -Number).
 get_number_of_pieces(Board, CurrPosCol-CurrPosRow, Direction, Player, Number) :-
-    explore_end(left, Board, CurrPosCol-CurrPosRow, Direction, Player, N1),
-    explore_end(right, Board, CurrPosCol-CurrPosRow, Direction, Player, N2),
+    explore(CurrPosCol-CurrPosRow, NewCurrPosCol1-NewCurrPosRow1, Direction, left),
+    explore_end(left, Board, NewCurrPosCol1-NewCurrPosRow1, Direction, Player, N1),
+    explore(CurrPosCol-CurrPosRow, NewCurrPosCol2-NewCurrPosRow2, Direction, right),
+    explore_end(right, Board, NewCurrPosCol2-NewCurrPosRow2, Direction, Player, N2),
     Number is N1 + N2 + 1.
 
 in_bounds([H | T], CurrPosCol-CurrPosRow) :-
@@ -78,10 +84,10 @@ in_bounds([H | T], CurrPosCol-CurrPosRow) :-
     CurrPosRow < Rows,
     CurrPosCol < Cols.
 
-explore_end(_, Board, CurrPosCol-CurrPosRow, _, _, -1) :- \+ in_bounds(Board, CurrPosCol-CurrPosRow).
-explore_end(_, Board, CurrPosCol-CurrPosRow, _, Player, -1) :- 
+explore_end(_, Board, CurrPosCol-CurrPosRow, _, _, 0) :- \+ in_bounds(Board, CurrPosCol-CurrPosRow), !.
+explore_end(_, Board, CurrPosCol-CurrPosRow, _, Player, 0) :- 
     get_value_at(Board, CurrPosRow, CurrPosCol, Piece),
-    \+ my_piece(Player, Piece).
+    \+ my_piece(Player, Piece), !.
 
 explore_end(End, Board, CurrPosCol-CurrPosRow, Direction, Player, N) :-
     explore(CurrPosCol-CurrPosRow, NewCurrPosCol-NewCurrPosRow, Direction, End),
