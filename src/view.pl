@@ -5,6 +5,7 @@ display_piece(white):- write('w').
 display_piece(visited):- write('x').
 display_piece(white_selected):- write('W').
 display_piece(black_selected):- write('B').
+display_piece(valid):- write('V').
 
 selected_piece(black, black_selected).
 selected_piece(white, white_selected).
@@ -13,8 +14,9 @@ selected_piece(white, white_selected).
 % display_game(+Game_State)
 display_game([CurrentPlayer, Board, Visited]) :-
 	display_player(CurrentPlayer),
-	process_visited(Board, Visited, true, NewBoard),
-	display_board(NewBoard).
+	show_valid_moves(CurrentPlayer, Board, Visited, NewBoard1),
+	process_visited(NewBoard1, Visited, true, NewBoard2),
+	display_board(NewBoard2).
 
 
 % display_board(+Board).
@@ -127,3 +129,21 @@ process_visited(Board, [Col-Row|T], true, NewBoard):-
 process_visited(Board, [Col-Row|T], false, NewBoard):-
 	process_visited(Board, T, false, TempBoard),
 	set_value_at(TempBoard, Row, Col, visited, NewBoard).
+
+show_valid_moves(_, Board, [], Board) :- !.
+show_valid_moves(Player, Board, _, Board) :- \+ is_human(Player), !.
+show_valid_moves(Player, Board, Visited, NewBoard) :-
+	valid_moves_player(Player-Board-Visited, Player, ValidMoves),
+	process_valid_moves(ValidMoves, Board, NewBoard).
+
+process_valid_moves([], NewBoard, NewBoard).
+process_valid_moves([ValidCol-ValidRow | T], Board, NewBoard) :-
+	get_value_at(Board, ValidRow, ValidCol, empty),
+	set_value_at(Board, ValidRow, ValidCol, valid, NextBoard),
+	process_valid_moves(T, NextBoard, NewBoard).
+
+process_valid_moves([ValidCol-ValidRow | T], Board, NewBoard) :-
+	get_value_at(Board, ValidRow, ValidCol, Value),
+	selected_piece(Value, SelectedValue),
+	set_value_at(Board, ValidRow, ValidCol, SelectedValue, NextBoard),
+	process_valid_moves(T, NextBoard, NewBoard).
