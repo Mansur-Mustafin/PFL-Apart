@@ -7,7 +7,7 @@ process_turn([Col-Row, none-none], Board, Player, -1, NewBoard):-
 
 	set_value_at(Board, Row, Col, MyPiece, NewBoard).
 
-process_turn([Col-Row, _], Board, Player, 0, NewBoard):-
+process_turn([Col-Row, none-none], Board, Player, 0, NewBoard):-
 	get_value_at(Board, Row, Col, Value),
 	\+ is_empty(Value), 
 
