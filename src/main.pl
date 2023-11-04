@@ -71,8 +71,16 @@ game_over(Player-Board-_):-
     \+ end_game(Winner).
 
 game_over(_) :-
-    write('The game has ended. Do you want to play again?'), nl,
-    play, !.
+    repeat,
+    write('The game has ended. Do you want to play again? (y/n)'), nl,
+    get_char(C), clear_buffer,
+    check_replay(C).
+
+check_replay(y) :-
+    play.
+
+check_replay(n) :-
+    write('Thank you for playing!'), nl.
 
 % case if we need choose the piece witch will move.
 game_loop(Player-NextPlayer, Board, []) :-
