@@ -11,12 +11,22 @@
 % game_state(+Player, +Board, +VisitedList)
 game_state(FirstPlayer-SecondPlayer, _Board, []):-
 	write('Choose mode:'), nl,
-	write('Player vs Player..[1]'), nl,
-	write('Player vs PC......[2]'), nl,
-	write('PC vs Player......[3]'), nl,
-	write('PC vs PC..........[4]'), nl,
+	write('Player vs Player........[1]'), nl,
+	write('Player vs Computer......[2]'), nl,
+	write('Computer vs Player......[3]'), nl,
+	write('Computer vs Computer....[4]'), nl,
 	read_namber(Lvl, 1, 4),
-	createPlayer(Lvl, FirstPlayer-SecondPlayer).
+	createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
+	choose_robot(TempFirstPlayer, white, FirstPlayer),
+	choose_robot(TempSecondPlayer, black, SecondPlayer).
+
+choose_robot(computer, Color, Player) :- 
+	choose_robot_menu_header(Color),
+	choose_robot_menu,
+	read_namber(Difficulty, 1, 2),
+	set_robot(Difficulty, Color, Player), !.
+
+choose_robot(Player, _, Player).
 
 is_none(none).
 is_empty(empty).
@@ -26,6 +36,11 @@ is_human(player_black).
 
 is_easy_pc(easy_pc_white).
 is_easy_pc(easy_pc_black).
+
+set_robot(1, white, easy_pc_white).
+set_robot(1, black, easy_pc_black).
+set_robot(2, white, hard_pc_white).
+set_robot(2, black, hard_pc_black).
 
 level(easy_pc_white, 1).
 level(easy_pc_black, 1).
@@ -39,7 +54,6 @@ my_piece(easy_pc_white, white).
 my_piece(hard_pc_white, white).
 my_piece(hard_pc_black, black).
 
-
 same_piece(white, white, white).
 same_piece(black, black, black).
 
@@ -48,9 +62,9 @@ same_piece(black, black, black).
 switch_player(P1-P2, P2-P1).
 
 createPlayer(1, player_white-player_black).
-createPlayer(2, player_white-easy_pc_black).
-createPlayer(3, easy_pc_white-player_black).
-createPlayer(4, easy_pc_white-easy_pc_black).
+createPlayer(2, player_white-computer).
+createPlayer(3, computer-computer).
+createPlayer(4, computer-computer).
 createPlayer(5, player_white-hard_pc_black).
 
 % Ask user the size of board and create it with appropriate rules.
