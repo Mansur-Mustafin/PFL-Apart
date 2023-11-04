@@ -150,4 +150,11 @@ get_board_index(Col-Row, RealCol-RealRow) :-
 	char_code(RealCol, Col1),
 	RealRow is Row + 1.
 
-filter_value(Value, Value-_).
+
+% 
+% best(+List, -Result, +Value)
+best_turns([Value-Turn|T], [Turn|T2], Value):- !,
+    best_turns(T, T2, Value).
+
+best_turns([Value1-Turn1|T], [], Value).
+

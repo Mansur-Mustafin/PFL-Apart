@@ -15,7 +15,7 @@ game_state(FirstPlayer-SecondPlayer, _Board, []):-
 	write('Player vs PC......[2]'), nl,
 	write('PC vs Player......[3]'), nl,
 	write('PC vs PC..........[4]'), nl,
-	read_namber(Lvl, 1, 4),
+	read_namber(Lvl, 1, 5),
 	createPlayer(Lvl, FirstPlayer-SecondPlayer).
 
 is_none(none).

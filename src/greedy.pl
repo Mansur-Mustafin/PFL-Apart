@@ -1,34 +1,37 @@
-is_empty(empty).
+process_turn([Col-Row, none-none], Board, Player, -1, NewBoard):-
+	get_value_at(Board, Row, Col, Value), 
 
-process_move([Col-Row], Board, Player, -1, NewBoard):-
-	get_value_at(Board, Row, Col, Value),
 	is_empty(Value),
 
-	my_piece(Player, MyPiece),
+	my_piece(Player, MyPiece), 
+
 	set_value_at(Board, Row, Col, MyPiece, NewBoard).
 
-process_move([Col-Row], Board, Player, 0, NewBoard):-
+process_turn([Col-Row, _], Board, Player, 0, NewBoard):-
 	get_value_at(Board, Row, Col, Value),
-	\+ is_empty(Value),
+	\+ is_empty(Value), 
 
 	my_piece(Player, MyPiece),
 	set_value_at(Board, Row, Col, MyPiece, NewBoard).
 
 % se eu botei peca no espaco com peca black.
-process_move([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
-	get_value_at(Board, Row, Col, Value),
-	\+ is_empty(Value),
+process_turn([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
+	get_value_at(Board, Row, Col, Value), 
+	\+ is_empty(Value), 
 
-	process_move(RestMoves, Board, Player, N1, TmpBoard),
-	NumberEatPieces is N1 + 1,
+	process_turn(RestMoves, Board, Player, N1, TmpBoard), 
+	NumberEatPieces is N1 + 1, 
+
 	set_value_at(TmpBoard, Row, Col, empty, NewBoard).
 
 % se eu botei peca no espac vazio.
-process_move([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
+process_turn([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
+
 	get_value_at(Board, Row, Col, Value),
+
 	is_empty(Value),
 
-	process_move(RestMoves, Board, Player, NumberEatPieces, NewBoard).
+	process_turn(RestMoves, Board, Player, NumberEatPieces, NewBoard).
 
 
 % ================================================================================
@@ -63,18 +66,23 @@ get_number_of_separate_pieces(Board, Player, N):-
         ), ValidMoves),
     length(ValidMoves, N).
 
+% value(+GameState, +Player, -Value)
 value(Player-_-Board-Turn, Player, Value) :-
-	write('To do'), nl.
+	get_number_of_separate_pieces(Board, Player, Nbefore),
+	process_turn(Turn, Board, Player, NumberEatPieces, NewBoard), !,
+	get_number_of_separate_pieces(NewBoard, Player, Nafter),
+
+	Value is 2 * (Nafter - Nbefore) - NumberEatPieces.
 
 test:-
-	get_board1(Board),
-	display_board(Board), nl, nl,
+	Board = [[empty,black,black,empty],[empty,black,black,empty],[empty,empty,white,empty],[empty,empty,empty,empty],[empty,white,empty,empty],[empty,white,white,empty]],
+	% display_board(Board), nl, nl,
 
-	get_number_of_separate_pieces(Board, player_white, Nbefore),
-	process_move([1-5, 2-5, 2-1], Board, player_white, N, NB),
-	get_number_of_separate_pieces(Board, player_white, Nafter),
+	get_number_of_separate_pieces(Board, hard_pc_black, Nbefore),
+	process_turn([2-1,1-2,none-none], Board, hard_pc_black, N, NB), !,
+	get_number_of_separate_pieces(NB, hard_pc_black, Nafter),
 
-	display_board(NB),
+	% display_board(NB),
 
 	write('Numbero de pecas eu comi: '), write(N), nl,
 	write('Numbero de pecas separadas antes: '), write(Nbefore), nl,

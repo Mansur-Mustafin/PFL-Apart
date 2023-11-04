@@ -2,6 +2,7 @@
 :- consult('state.pl').
 :- consult('move.pl').
 :- consult('utils.pl').
+:- consult('greedy.pl').
 :- use_module(library(between)).
 :- use_module(library(random)).
 :- use_module(library(lists)).
@@ -120,13 +121,14 @@ choose_move(Player-_-Board-[], Player, 1, Turn) :-
 
 choose_move(Player-NextPlayer-Board-[], Player, 2, Turn) :-
     valid_turns_robot(Player-Board, Player, ValidTurns),
-    setof(Value-Turn, (
+    setof(Value-Turn, (ValidTurns, NextPlayer, Board, Turn, Player)^(
             member(Turn, ValidTurns),
             value(Player-NextPlayer-Board-Turn, Player, Value)
         ), EvaluatedTurns),
-    reverse(EvaluatedTurns, [BestValue-_ | T]),
-    include(filter_value(BestValue), [BestValue-_ | T], BestTurns),
-    random_member(_-Turn, BestTurns).
+
+    reverse(EvaluatedTurns, [BestValue-BestTurn| T]), 
+    best_turns([BestValue-BestTurn | T], BestTurns, BestValue), 
+    random_member(Turn, BestTurns).
 
 game_loop(_-_, [], _).
 
@@ -138,9 +140,13 @@ game_loop(Player-NextPlayer, Board, []) :-
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
 
 game_loop(Player-NextPlayer, Board, []) :-
-    is_easy_pc(Player),
-    valid_turns_robot(Player-Board, Player, ValidTurns),
-    random_member(Turn, ValidTurns),
+    % is_easy_pc(Player),
+    \+ is_human(Player),
+    % valid_turns_robot(Player-Board, Player, ValidTurns),
+    level(Player, Level),
+    choose_move(Player-NextPlayer-Board-[], Player, Level, Turn),
+    %random_member(Turn, ValidTurns),
+    write(Turn), nl,
     game_loop(Player-NextPlayer, Board, Turn).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
