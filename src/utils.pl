@@ -149,3 +149,5 @@ get_board_index(Col-Row, RealCol-RealRow) :-
 	Col1 is Col + 65,
 	char_code(RealCol, Col1),
 	RealRow is Row + 1.
+
+filter_value(Value, Value-_).

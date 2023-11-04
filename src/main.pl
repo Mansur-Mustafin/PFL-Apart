@@ -38,19 +38,6 @@ get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
 get_next_jumps(CurrMove, [], NewMoves, NewMoves).
 get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
     get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
- 
-valid_moves(Player-Board-Visited, Player, ValidMoves) :-
-    shape(Board, Rows, Columns),
-    Rows1 is Rows - 1,
-    Columns1 is Columns - 1,
-    setof(OrigCol-OrigRow-NewCol-NewRow, (Player,Board,Visited,Rows1,Columns1)^(
-        between(0, Rows1, OrigRow),
-        between(0, Columns1, OrigCol),
-        between(0, Rows1, NewRow),
-        between(0, Columns1, NewCol),
-        valid_move(Player-Board-Visited, OrigCol-OrigRow-NewCol-NewRow)
-        ), ValidMoves),
-    write(ValidMoves).
 
 valid_moves_player(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
     shape(Board, Rows, Columns),
@@ -127,8 +114,19 @@ check_replay(_, y, _) :-
 check_replay(_, n, []) :-
     write('Thank you for playing!'), nl, !.
 
-% case if we need choose the piece witch will move. 
-% maybe move game_over here?
+choose_move(Player-_-Board-[], Player, 1, Turn) :-
+    valid_turns_robot(Player-Board, Player, ValidTurns),
+    random_member(Turn, ValidTurns).
+
+choose_move(Player-NextPlayer-Board-[], Player, 2, Turn) :-
+    valid_turns_robot(Player-Board, Player, ValidTurns),
+    setof(Value-Turn, (
+            member(Turn, ValidTurns),
+            value(Player-NextPlayer-Board-Turn, Player, Value)
+        ), EvaluatedTurns),
+    reverse(EvaluatedTurns, [BestValue-_ | T]),
+    include(filter_value(BestValue), [BestValue-_ | T], BestTurns),
+    random_member(_-Turn, BestTurns).
 
 game_loop(_-_, [], _).
 

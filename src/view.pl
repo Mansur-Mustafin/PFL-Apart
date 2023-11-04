@@ -113,10 +113,7 @@ display_player(player_white):-
 	write('Turn of player playing white'), nl.
 display_player(player_black):-	
 	write('Turn of player playing black'), nl.
-display_player(easy_pc_white):-	
-	write('Turn of pc playing white'), nl.
-display_player(easy_pc_black):-	
-	write('Turn of pc playing black'), nl.
+display_player(_).
 
 
 % true = The first element on Board = selected.

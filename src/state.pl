@@ -19,6 +19,7 @@ game_state(FirstPlayer-SecondPlayer, _Board, []):-
 	createPlayer(Lvl, FirstPlayer-SecondPlayer).
 
 is_none(none).
+is_empty(empty).
 
 is_human(player_white).
 is_human(player_black).
@@ -26,11 +27,18 @@ is_human(player_black).
 is_easy_pc(easy_pc_white).
 is_easy_pc(easy_pc_black).
 
+level(easy_pc_white, 1).
+level(easy_pc_black, 1).
+level(hard_pc_white, 2).
+level(hard_pc_black, 2).
 
 my_piece(player_black, black).
 my_piece(player_white, white).
 my_piece(easy_pc_black, black).
 my_piece(easy_pc_white, white).
+my_piece(hard_pc_white, white).
+my_piece(hard_pc_black, black).
+
 
 same_piece(white, white, white).
 same_piece(black, black, black).
@@ -43,6 +51,7 @@ createPlayer(1, player_white-player_black).
 createPlayer(2, player_white-easy_pc_black).
 createPlayer(3, easy_pc_white-player_black).
 createPlayer(4, easy_pc_white-easy_pc_black).
+createPlayer(5, player_white-hard_pc_black).
 
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
