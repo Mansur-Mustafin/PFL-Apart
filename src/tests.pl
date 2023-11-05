@@ -12,7 +12,7 @@ get_board1(Board) :-
                 [empty, empty, empty, empty, empty], % 4
                 [empty, white, empty, empty, empty], % 5
                 [empty, empty, empty, empty, empty], % 6
-                [empty, white, white, white, empty], % 7
+                [empty, white, white, empty, empty], % 7
                 [empty, white, white, white, empty]  % 8
     ].
 

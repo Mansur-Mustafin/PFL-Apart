@@ -21,7 +21,7 @@ valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
     is_human(Player),
     get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
 
-valid_moves_aux(_-_, [], Answer, Answer). 
+valid_moves_aux(_-_, [], Answer, Answer) :- !. 
 valid_moves_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
     set_value_at(Board, Row, Col, empty, NewBoard),
     valid_moves_piece(Player-NewBoard, [[Col-Row]], [], ValidTurns),
@@ -46,13 +46,7 @@ get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
     get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
 
 get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :- 
-    shape(Board, Rows, Columns),
-    Rows1 is Rows - 1,
-    Columns1 is Columns - 1,
-
     findall(NewCol-NewRow, (
-        between(0, Rows1, NewRow),
-        between(0, Columns1, NewCol),
         valid_move(Player-Board-[CurrCol-CurrRow | T], CurrCol-CurrRow-NewCol-NewRow)
         ), ValidMoves).
 
@@ -128,13 +122,8 @@ choose_move(Player-NextPlayer-Board-[], Player, 2, Move) :-
             value(Player-NextPlayer-Board-Move, Player, Value)
         ), EvaluatedMoves),
 
-    write('Line 131'), nl,
-    write(EvaluatedMoves), nl,
-
     reverse(EvaluatedMoves, [BestValue-BestMove| T]), 
     best_turns([BestValue-BestMove | T], BestMoves, BestValue),
-    write('Line 136'), nl,
-    write(BestMoves), nl,
     random_member(Move, BestMoves).
 
 game_loop(_-_, [], _).
@@ -195,4 +184,5 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 play :-
     display_title,
     initial_state(Player-NextPlayer-Board-Visited),
+    %trace,
     game_loop(Player-NextPlayer, Board, Visited).

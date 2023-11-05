@@ -47,20 +47,13 @@ get_adj(Col-Row, AdjCol-AdjRow):-
 adj_pieces(Board, Col, Row, Piece, List):-
     findall(AdjCol-AdjRow, (
         get_adj(Col-Row, AdjCol-AdjRow),
-        in_bounds(Board, AdjCol-AdjRow),
         get_value_at(Board, AdjRow, AdjCol, Value),
         same_piece(Piece, Value, _)
     ), List).
 
 
 get_number_of_separate_pieces(Board, Player, N):-
-    shape(Board, Rows, Columns),
-    Rows1 is Rows - 1,
-    Columns1 is Columns - 1,
-
     findall(_, (
-        between(0, Rows1, Row),
-        between(0, Columns1, Col),
         get_value_at(Board, Row, Col, Value),
         my_piece(Player, Value),
         adj_pieces(Board, Col, Row, Value, List),

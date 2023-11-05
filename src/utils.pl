@@ -22,10 +22,12 @@ read_collumn(Col) :-
 	get_code(_), !.
 
 validate_letter(Letter, Letter) :-
-	between(65, 90, Letter).
+	Letter >= 65,
+	Letter =< 90.
 
 validate_letter(Char, Letter) :-
-	between(97, 122, Char),
+	Letter >= 97,
+	Letter =< 122,
 	Letter is Char - 32.
 
 read_dash :-
@@ -104,8 +106,8 @@ get_index(Letter, Code):-
 % basicly: Matrix[RowN][ColN] -> Value
 % get_value_at(+Matrix, +RowN, +ColN, -Value)
 get_value_at(Board, RowN, ColN, Value):-
-    nth0(RowN, Board, Row),
-    nth0(ColN, Row, Value).
+    nth0(RowN, Board, _Row),
+    nth0(ColN, _Row, Value).
 
 % Set Value in Matrix at (RowN, ColN).
 % set_value_at(+Matrix, +RowN, +ColN, +Value, -ResultMatrix)
