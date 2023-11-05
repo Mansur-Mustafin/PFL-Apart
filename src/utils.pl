@@ -52,32 +52,32 @@ read_row_aux(X, true, X):-
 	clear_buffer.
 
 % read_number(X, Low, Up). TODO: 
-read_namber(X, Low, Up):-
+read_number(X, Low, Up):-
 	repeat,
-	read_namber_aux(0, false, X),
+	read_number_aux(0, false, X),
 	between(Low, Up, X),
 	!.
 
-read_namber_aux(Acc, _, X):-
+read_number_aux(Acc, _, X):-
 	peek_code(C),
 	C >= 48,							% '0'
 	C =< 57,
 	get_code(_),						% '9'
 	!,
 	Acc1 is 10 * Acc + (C - 48),
-	read_namber_aux(Acc1, true, X).
+	read_number_aux(Acc1, true, X).
 
-read_namber_aux(0, false, _):-
+read_number_aux(0, false, _):-
 	write('Please enter number'), nl,
 	clear_buffer, fail.
 
 
-read_namber_aux(X, true, X):-
+read_number_aux(X, true, X):-
 	peek_char(C),
 	C = '\n',
-	clear_buffer.
+	clear_buffer, !.
 
-read_namber_aux(X, true, X):-
+read_number_aux(X, true, X):-
 	peek_char(C),
 	C \= '\n',
 	write('Please enter number'), nl,

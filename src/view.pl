@@ -160,3 +160,13 @@ display_pc_move(Player, CurrCol-CurrRow, NewCol-NewRow) :-
 	write(Piece),
 	write(' moved the piece on '), write(PrintCurrCol-PrintCurrRow),
 	write(' to '), write(PrintNewCol-PrintNewRow), nl.
+
+choose_robot_menu_header(white) :- 
+	write('Choose the difficulty of the white computer'), nl.
+
+choose_robot_menu_header(black) :- 
+	write('Choose the difficulty of the black computer'), nl.
+
+choose_robot_menu :-
+	write('Easy.....[1]'), nl,
+	write('Hard.....[2]'), nl.
