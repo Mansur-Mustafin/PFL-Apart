@@ -38,7 +38,7 @@ valid_piece_choice(Player-NextPlayer, Board, _):-
 has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], true) :-
     valid_moves(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
 
-has_move(Player-NextPlayer, Board, _, false).
+has_move(_, _, _, false).
 
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, left) :- NewRow is CurrRow - 1.
 explore(SameCol-CurrRow, SameCol-NewRow, vertical, right) :- NewRow is CurrRow + 1.

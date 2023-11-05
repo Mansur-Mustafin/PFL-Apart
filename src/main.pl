@@ -10,12 +10,16 @@
 find_all_pieces(Player, Board, ValidPieces) :-
     findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces).
 
-valid_moves(Player-NewPlayer-Board-_, Player, ValidTurns) :-
+valid_moves(Player-_-Board-_, Player, ValidTurns) :-
     \+ is_human(Player),
     find_all_pieces(Player, Board, ValidPieces),
     valid_moves_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
     maplist(add_end_turn, ValidTurnsAux1, ValidTurnsAux2),
     maplist(reverse, ValidTurnsAux2, ValidTurns).
+
+valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+    is_human(Player),
+    get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
 
 valid_moves_aux(_-_, [], Answer, Answer). 
 valid_moves_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
@@ -37,13 +41,9 @@ get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
     append(NewCurrMoves, Acc, Acc1),
     get_next_moves(Player-Board, T, Acc1, NewMoves).
 
-get_next_jumps(CurrMove, [], NewMoves, NewMoves).
+get_next_jumps(_, [], NewMoves, NewMoves).
 get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
     get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
-
-valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
-    is_human(Player),
-    get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
 
 get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :- 
     shape(Board, Rows, Columns),
@@ -166,7 +166,7 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    game_over(Player-NewPlayer-NewBoard-NewVisited, Winner),
+    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),   % verificar isso!
 
     end_game(NewBoard, Winner, NewBoard1),
 
@@ -186,7 +186,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 
     peek_char(_), clear_buffer,
 
-    game_over(Player-NewPlayer-NewBoard-NewVisited, Winner),
+    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),   % verificar isso!
 
     end_game(NewBoard, Winner, NewBoard1),
     

@@ -156,5 +156,5 @@ best_turns([], [], _).
 best_turns([Value-Turn|T], [Turn|T2], Value):- !,
     best_turns(T, T2, Value).
 
-best_turns([Value1-Turn1|T], [], Value).
+best_turns(_, [], _).
 

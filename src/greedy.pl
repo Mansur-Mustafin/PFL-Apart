@@ -63,7 +63,8 @@ get_number_of_separate_pieces(Board, Player, N):-
         between(0, Columns1, Col),
         get_value_at(Board, Row, Col, Value),
         my_piece(Player, Value),
-        \+ adj_pieces(Board, Col, Row, Value, List)
+        adj_pieces(Board, Col, Row, Value, List),
+        length(List, 0)
         ), ValidMoves),
     length(ValidMoves, N).
 
@@ -100,15 +101,21 @@ value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
 	Value is Nafter - Nbefore - InfluenceRate.
 
 test:-
-	Board = [[empty,black,black,empty],[empty,black,black,empty],[empty,empty,white,empty],[empty,empty,empty,empty],[empty,white,empty,empty],[empty,white,white,empty]],
-	% display_board(Board), nl, nl,
+	Board = [	[empty,black,black,empty],
+				[empty,black,black,empty],
+				[white,empty,white,empty],
+				[empty,empty,empty,empty],
+				[empty,empty,empty,empty],
+				[empty,white,white,empty]],
+				
+	display_board(Board), nl, nl,
 
-	get_number_of_separate_pieces(Board, hard_pc_black, Nbefore),
-	process_turn([2-1,1-2,none-none], Board, hard_pc_black, N, NB), !,
-	get_number_of_separate_pieces(NB, hard_pc_black, Nafter),
+	get_number_of_separate_pieces(Board, player_white, Nbefore),
+	% process_turn([2-1,1-2,none-none], Board, hard_pc_black, N, NB), !,
+	% get_number_of_separate_pieces(NB, hard_pc_black, Nafter),
 
 	% display_board(NB),
 
-	write('Numbero de pecas eu comi: '), write(N), nl,
-	write('Numbero de pecas separadas antes: '), write(Nbefore), nl,
-	write('Numbero de pecas separadas depois: '), write(Nafter), nl.
+	% write('Numbero de pecas eu comi: '), write(N), nl,
+	write('Numbero de pecas separadas antes: '), write(Nbefore), nl.
+	% write('Numbero de pecas separadas depois: '), write(Nafter), nl.
