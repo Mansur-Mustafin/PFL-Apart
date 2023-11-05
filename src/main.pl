@@ -103,6 +103,7 @@ game_over(Player-Board-_, Winner):-
 
 end_game(Board, none, Board) :- !.
 end_game(Board, Winner, NewBoard) :-
+    display_board(Board),
     print_winner(Winner),
     repeat,
     write('The game has ended. Do you want to play again? (y/n)'), nl,
@@ -134,7 +135,7 @@ game_loop(_-_, [], _).
 
 game_loop(Player-NextPlayer, Board, []) :-
     is_human(Player),
-    display_game([Player, Board, []]),
+    display_game(Player-NextPlayer-Board-[]),
     write('Please select the piece you wish to move.'), nl,
     read_pos(OrigColIndex-OriginRowIndex, true),
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
@@ -152,7 +153,7 @@ game_loop(Player-NextPlayer, Board, []) :-
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     is_human(Player),
 
-    display_game([Player, Board, [CurrPosCol-CurrPosRow|T]]),
+    display_game(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]),
 
     has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], HasMove),
 
@@ -176,7 +177,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
             CurrCol-CurrRow-NextCol-NextRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    display_game([Player, NewBoard, []]),
+    display_game(Player-NextPlayer-NewBoard-[]),
     display_pc_move(Player, CurrCol-CurrRow, NextCol-NextRow),
 
     nl, write('Enter anything to continue: '), nl,

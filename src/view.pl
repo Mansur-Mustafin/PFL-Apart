@@ -14,7 +14,7 @@ selected_piece(white, white_selected).
 
 
 % display_game(+Game_State)
-display_game([CurrentPlayer, Board, Visited]) :-
+display_game(CurrentPlayer-_-Board-Visited) :-
 	display_player(CurrentPlayer),
 	show_valid_moves(CurrentPlayer, Board, Visited, NewBoard1),
 	process_visited(NewBoard1, Visited, true, NewBoard2),
