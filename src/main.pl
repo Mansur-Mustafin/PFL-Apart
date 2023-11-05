@@ -1,65 +1,30 @@
-:- consult('view.pl').
-:- consult('state.pl').
-:- consult('move.pl').
-:- consult('utils.pl').
-:- consult('greedy.pl').
 :- use_module(library(between)).
 :- use_module(library(random)).
 :- use_module(library(lists)).
+:- consult('computer.pl').
+:- consult('game_over.pl').
+:- consult('io.pl').
+:- consult('move.pl').
+:- consult('state.pl').
+:- consult('utils.pl').
+:- consult('view.pl').
 
-find_all_pieces(Player, Board, ValidPieces) :-
-    findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces).
+% display_game(+Game_State)
+display_game(CurrentPlayer-_-Board-Visited) :-
+    display_player(CurrentPlayer),
+    show_valid_moves(CurrentPlayer, Board, Visited, NewBoard1),
+    process_visited(NewBoard1, Visited, true, NewBoard2),
+    display_board(NewBoard2).
 
-valid_moves(Player-_-Board-_, Player, ValidTurns) :-
-    \+ is_human(Player),
-    find_all_pieces(Player, Board, ValidPieces),
-    valid_moves_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
-    maplist(add_end_turn, ValidTurnsAux1, ValidTurnsAux2),
-    maplist(reverse, ValidTurnsAux2, ValidTurns).
+initial_state(FirstPlayer-SecondPlayer-Board-[]):-
+    get_mode(Lvl),
+    createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
+    choose_robot(TempFirstPlayer, white, FirstPlayer),
+    choose_robot(TempSecondPlayer, black, SecondPlayer),
+    get_board_size(NumCol-NumRow),
+    createBoard(NumCol-NumRow, Board).
 
-valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
-    is_human(Player),
-    get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
-
-valid_moves_aux(_-_, [], Answer, Answer) :- !. 
-valid_moves_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
-    set_value_at(Board, Row, Col, empty, NewBoard),
-    valid_moves_piece(Player-NewBoard, [[Col-Row]], [], ValidTurns),
-    append(ValidTurns, Acc, Acc1),
-    valid_moves_aux(Player-Board, T, Acc1, Answer).
-
-valid_moves_piece(_-_, [], ValidTurns, ValidTurns):- !.
-valid_moves_piece(Player-Board, CurrMoves, Acc, ValidTurns) :-
-    get_next_moves(Player-Board, CurrMoves, [], NewCurrMoves),
-    append(NewCurrMoves, Acc, Acc1),
-    valid_moves_piece(Player-Board, NewCurrMoves, Acc1, ValidTurns).
-
-get_next_moves(_-_, [], NewMoves, NewMoves).
-get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
-    get_valid_jumps(Player-Board-CurrMove, Player, NextJumps),
-    get_next_jumps(CurrMove, NextJumps, [], NewCurrMoves),
-    append(NewCurrMoves, Acc, Acc1),
-    get_next_moves(Player-Board, T, Acc1, NewMoves).
-
-get_next_jumps(_, [], NewMoves, NewMoves).
-get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
-    get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
-
-get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :- 
-    findall(NewCol-NewRow, (
-        valid_move(Player-Board-[CurrCol-CurrRow | T], CurrCol-CurrRow-NewCol-NewRow)
-        ), ValidMoves).
-
-% Se Primeiro turno e move de distancia 1
-check_one_move_turn(Player-NextPlayer-_-[], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-_-[]) :-
-    get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, _, 1),
-    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer).
-
-
-% Qualquer move sem ser o de cima
-check_one_move_turn(Player-NextPlayer-_-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, Player-NextPlayer-_-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]).
-
-move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
+move(Player-NextPlayer-Board-[_, _ | _], _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     write('You chose to stop your movement. It\'s the next player\'s turn now.'), nl.
 
@@ -76,6 +41,8 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
         NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
     is_human(Player),
+    \+ is_none(NewPosCol),
+    \+ is_none(NewPosRow),
 
     valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
@@ -89,6 +56,16 @@ move(Player-NextPlayer-Board-Visited, _, _) :-
     write('Oops! That move is not valid. Please try again.'), nl,
     game_loop(Player-NextPlayer, Board, Visited).
 
+valid_moves(Player-_-Board-_, Player, ValidTurns) :-
+    \+ is_human(Player),
+    find_all_pieces(Player, Board, ValidPieces),
+    valid_moves_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
+    maplist(add_end_turn, ValidTurnsAux1, ValidTurnsAux2),
+    maplist(reverse, ValidTurnsAux2, ValidTurns).
+
+valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+    is_human(Player),
+    get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
 
 game_over(Player-_-Board-_, Winner):-
     has_won(Board, white, WhiteWins),
@@ -96,20 +73,14 @@ game_over(Player-_-Board-_, Winner):-
     my_piece(Player, Piece),
     determine_winner(Piece, WhiteWins, BlackWins, Winner).
 
-end_game(Board, none, Board) :- !.
-end_game(Board, Winner, NewBoard) :-
-    display_board(Board),
-    print_winner(Winner),
-    repeat,
-    write('The game has ended. Do you want to play again? (y/n)'), nl,
-    peek_char(C), clear_buffer,
-    check_replay(Board, C, NewBoard), !.
+% value(+GameState, +Player, -Value)
+value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
+    get_number_of_separate_pieces(Board, Player, Nbefore),
+    set_value_at(Board, FirstRow, FirstCol, empty, NewBoard),
+    process_turn(T, NewBoard, Player, InfluenceRate, NewBoard2), !,
+    get_number_of_separate_pieces(NewBoard2, Player, Nafter),
 
-check_replay(_, y, _) :-
-    play.
-
-check_replay(_, n, []) :-
-    write('Thank you for playing!'), nl, !.
+    Value is Nafter - Nbefore - InfluenceRate.
 
 choose_move(Player-NewPlayer-Board-[], Player, 1, Move) :-
     valid_moves(Player-NewPlayer-Board-[], Player, ValidMoves),
@@ -155,7 +126,7 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),   % verificar isso!
+    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
 
@@ -175,7 +146,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 
     peek_char(_), clear_buffer,
 
-    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),   % verificar isso!
+    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
     
@@ -184,5 +155,4 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 play :-
     display_title,
     initial_state(Player-NextPlayer-Board-Visited),
-    %trace,
     game_loop(Player-NextPlayer, Board, Visited).

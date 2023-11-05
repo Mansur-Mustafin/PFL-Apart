@@ -1,3 +1,27 @@
+:- ensure_loaded('main.pl').
+
+get_number_of_separate_pieces(Board, Player, N):-
+    findall(_, (
+        get_value_at(Board, Row, Col, Value),
+        my_piece(Player, Value),
+        adj_pieces(Board, Col, Row, Value, List),
+        length(List, 0)
+        ), ValidMoves),
+    length(ValidMoves, N).
+
+
+adj_pieces(Board, Col, Row, Piece, List):-
+    findall(AdjCol-AdjRow, (
+        get_adj(Col-Row, AdjCol-AdjRow),
+        get_value_at(Board, AdjRow, AdjCol, Value),
+        same_piece(Piece, Value, _)
+    ), List).
+
+
+get_adj(Col-Row, AdjCol-AdjRow):-
+    explore(Col-Row, AdjCol-AdjRow, _, _).
+
+
 process_turn([Col-Row, none-none], Board, Player, 0, NewBoard):-
 	get_value_at(Board, Row, Col, Value), 
 
@@ -40,27 +64,6 @@ process_turn([Col-Row|RestMoves], Board, Player, InfluenceRate, NewBoard):-
 % ================================================================================
 
 
-get_adj(Col-Row, AdjCol-AdjRow):-
-    explore(Col-Row, AdjCol-AdjRow, _, _).
-
-
-adj_pieces(Board, Col, Row, Piece, List):-
-    findall(AdjCol-AdjRow, (
-        get_adj(Col-Row, AdjCol-AdjRow),
-        get_value_at(Board, AdjRow, AdjCol, Value),
-        same_piece(Piece, Value, _)
-    ), List).
-
-
-get_number_of_separate_pieces(Board, Player, N):-
-    findall(_, (
-        get_value_at(Board, Row, Col, Value),
-        my_piece(Player, Value),
-        adj_pieces(Board, Col, Row, Value, List),
-        length(List, 0)
-        ), ValidMoves),
-    length(ValidMoves, N).
-
 check_components(Col-Row, Piece, Board, Visited, Acc, N) :-
 	adj_pieces(Board, Col, Row, Piece, Adjs),
 	member(NewCol-NewRow, Adjs),
@@ -83,32 +86,3 @@ dfs(_, _, _, Visited, Visited).
 
 check_over(Col-Row, Piece, Board, _, NextVisited, NewVisited) :-
 	dfs(Col-Row, Piece, Board, NextVisited, NewVisited).
-
-% value(+GameState, +Player, -Value)
-value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
-	get_number_of_separate_pieces(Board, Player, Nbefore),
-	set_value_at(Board, FirstRow, FirstCol, empty, NewBoard),
-	process_turn(T, NewBoard, Player, InfluenceRate, NewBoard2), !,
-	get_number_of_separate_pieces(NewBoard2, Player, Nafter),
-
-	Value is Nafter - Nbefore - InfluenceRate.
-
-test:-
-	Board = [	[empty,black,black,empty],
-				[empty,black,black,empty],
-				[white,empty,white,empty],
-				[empty,empty,empty,empty],
-				[empty,empty,empty,empty],
-				[empty,white,white,empty]],
-				
-	display_board(Board), nl, nl,
-
-	get_number_of_separate_pieces(Board, player_white, Nbefore),
-	% process_turn([2-1,1-2,none-none], Board, hard_pc_black, N, NB), !,
-	% get_number_of_separate_pieces(NB, hard_pc_black, Nafter),
-
-	% display_board(NB),
-
-	% write('Numbero de pecas eu comi: '), write(N), nl,
-	write('Numbero de pecas separadas antes: '), write(Nbefore), nl.
-	% write('Numbero de pecas separadas depois: '), write(Nafter), nl.

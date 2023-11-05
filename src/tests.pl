@@ -127,3 +127,23 @@ test_check_win_player:-
     write('Test 9 passed'), nl, nl,
     write('All tests passed'), nl.
 
+test:-
+    Board = [   [empty,black,black,empty],
+                [empty,black,black,empty],
+                [white,empty,white,empty],
+                [empty,empty,empty,empty],
+                [empty,empty,empty,empty],
+                [empty,white,white,empty]],
+                
+    display_board(Board), nl, nl,
+
+    get_number_of_separate_pieces(Board, player_white, Nbefore),
+    % process_turn([2-1,1-2,none-none], Board, hard_pc_black, N, NB), !,
+    % get_number_of_separate_pieces(NB, hard_pc_black, Nafter),
+
+    % display_board(NB),
+
+    % write('Numbero de pecas eu comi: '), write(N), nl,
+    write('Numbero de pecas separadas antes: '), write(Nbefore), nl.
+    % write('Numbero de pecas separadas depois: '), write(Nafter), nl.
+
