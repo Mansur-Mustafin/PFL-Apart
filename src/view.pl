@@ -132,7 +132,7 @@ process_visited(Board, [Col-Row|T], false, NewBoard):-
 show_valid_moves(_, Board, [], Board) :- !.
 show_valid_moves(Player, Board, _, Board) :- \+ is_human(Player), !.
 show_valid_moves(Player, Board, Visited, NewBoard) :-
-	valid_moves_player(Player-Board-Visited, Player, ValidMoves),
+	get_valid_jumps(Player-Board-Visited, Player, ValidMoves),
 	process_valid_moves(ValidMoves, Board, NewBoard).
 
 process_valid_moves([], NewBoard, NewBoard).

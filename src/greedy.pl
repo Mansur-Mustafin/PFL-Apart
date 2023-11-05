@@ -1,4 +1,4 @@
-process_turn([Col-Row, none-none], Board, Player, -1, NewBoard):-
+process_turn([Col-Row, none-none], Board, Player, 0, NewBoard):-
 	get_value_at(Board, Row, Col, Value), 
 
 	is_empty(Value),
@@ -7,31 +7,34 @@ process_turn([Col-Row, none-none], Board, Player, -1, NewBoard):-
 
 	set_value_at(Board, Row, Col, MyPiece, NewBoard).
 
-process_turn([Col-Row, none-none], Board, Player, 0, NewBoard):-
+process_turn([Col-Row, none-none], Board, Player, InfluenceRate, NewBoard):-
 	get_value_at(Board, Row, Col, Value),
 	\+ is_empty(Value), 
 
 	my_piece(Player, MyPiece),
-	set_value_at(Board, Row, Col, MyPiece, NewBoard).
+	set_value_at(Board, Row, Col, MyPiece, NewBoard),
+	check_components(Col-Row, Value, NewBoard, [Col-Row], 0, Components),
+	InfluenceRate is 0.4 + Components.
 
 % se eu botei peca no espaco com peca black.
-process_turn([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
+process_turn([Col-Row|RestMoves], Board, Player, InfluenceRate, NewBoard):-
 	get_value_at(Board, Row, Col, Value), 
 	\+ is_empty(Value), 
 
 	process_turn(RestMoves, Board, Player, N1, TmpBoard), 
-	NumberEatPieces is N1 + 1, 
+	check_components(Col-Row, Value, TmpBoard, [Col-Row], 0, Components),
+	InfluenceRate is N1 + 0.4 + Components,
 
 	set_value_at(TmpBoard, Row, Col, empty, NewBoard).
 
 % se eu botei peca no espac vazio.
-process_turn([Col-Row|RestMoves], Board, Player, NumberEatPieces, NewBoard):-
+process_turn([Col-Row|RestMoves], Board, Player, InfluenceRate, NewBoard):-
 
 	get_value_at(Board, Row, Col, Value),
 
 	is_empty(Value),
 
-	process_turn(RestMoves, Board, Player, NumberEatPieces, NewBoard).
+	process_turn(RestMoves, Board, Player, InfluenceRate, NewBoard).
 
 
 % ================================================================================
@@ -64,16 +67,16 @@ get_number_of_separate_pieces(Board, Player, N):-
         ), ValidMoves),
     length(ValidMoves, N).
 
-check_components(Col-Row, Player, Board, Visited, Acc, N) :-
-	my_piece(Player, Piece),
+check_components(Col-Row, Piece, Board, Visited, Acc, N) :-
 	adj_pieces(Board, Col, Row, Piece, Adjs),
 	member(NewCol-NewRow, Adjs),
 	\+ member(NewCol-NewRow, Visited), !,
 	Acc1 is Acc + 1,
 	dfs(NewCol-NewRow, Piece, Board, [NewCol-NewRow | Visited], NewVisited), !,
-	check_components(Col-Row, Player, Board, NewVisited, Acc1, N).
+	check_components(Col-Row, Piece, Board, NewVisited, Acc1, N).
 
-check_components(_, _, _, _, N, N) :- !.
+check_components(_, _, _, _, 0, 0) :- !.
+check_components(_, _, _, _, N, N1) :- N1 is N - 0.5.
 
 dfs(Col-Row, Piece, Board, Visited, NewVisited) :-
 	adj_pieces(Board, Col, Row, Piece, Adjs),
@@ -88,12 +91,13 @@ check_over(Col-Row, Piece, Board, _, NextVisited, NewVisited) :-
 	dfs(Col-Row, Piece, Board, NextVisited, NewVisited).
 
 % value(+GameState, +Player, -Value)
-value(Player-_-Board-Turn, Player, Value) :-
+value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
 	get_number_of_separate_pieces(Board, Player, Nbefore),
-	process_turn(Turn, Board, Player, NumberEatPieces, NewBoard), !,
-	get_number_of_separate_pieces(NewBoard, Player, Nafter),
+	set_value_at(Board, FirstRow, FirstCol, empty, NewBoard),
+	process_turn(T, NewBoard, Player, InfluenceRate, NewBoard2), !,
+	get_number_of_separate_pieces(NewBoard2, Player, Nafter),
 
-	Value is 2 * (Nafter - Nbefore) - NumberEatPieces.
+	Value is Nafter - Nbefore - InfluenceRate.
 
 test:-
 	Board = [[empty,black,black,empty],[empty,black,black,empty],[empty,empty,white,empty],[empty,empty,empty,empty],[empty,white,empty,empty],[empty,white,white,empty]],

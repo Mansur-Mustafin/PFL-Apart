@@ -10,28 +10,29 @@
 find_all_pieces(Player, Board, ValidPieces) :-
     findall(Col-Row, check_valid_piece(Player, Board, Col-Row), ValidPieces).
 
-valid_turns_robot(Player-Board, Player, ValidTurns) :-
+valid_moves(Player-NewPlayer-Board-_, Player, ValidTurns) :-
+    \+ is_human(Player),
     find_all_pieces(Player, Board, ValidPieces),
-    valid_turns_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
+    valid_moves_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
     maplist(add_end_turn, ValidTurnsAux1, ValidTurnsAux2),
     maplist(reverse, ValidTurnsAux2, ValidTurns).
 
-valid_turns_aux(_-_, [], Answer, Answer). 
-valid_turns_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
+valid_moves_aux(_-_, [], Answer, Answer). 
+valid_moves_aux(Player-Board, [Col-Row | T], Acc, Answer) :-
     set_value_at(Board, Row, Col, empty, NewBoard),
-    valid_turns_piece(Player-NewBoard, [[Col-Row]], [], ValidTurns),
+    valid_moves_piece(Player-NewBoard, [[Col-Row]], [], ValidTurns),
     append(ValidTurns, Acc, Acc1),
-    valid_turns_aux(Player-Board, T, Acc1, Answer).
+    valid_moves_aux(Player-Board, T, Acc1, Answer).
 
-valid_turns_piece(_-_, [], ValidTurns, ValidTurns):- !.
-valid_turns_piece(Player-Board, CurrMoves, Acc, ValidTurns) :-
+valid_moves_piece(_-_, [], ValidTurns, ValidTurns):- !.
+valid_moves_piece(Player-Board, CurrMoves, Acc, ValidTurns) :-
     get_next_moves(Player-Board, CurrMoves, [], NewCurrMoves),
     append(NewCurrMoves, Acc, Acc1),
-    valid_turns_piece(Player-Board, NewCurrMoves, Acc1, ValidTurns).
+    valid_moves_piece(Player-Board, NewCurrMoves, Acc1, ValidTurns).
 
 get_next_moves(_-_, [], NewMoves, NewMoves).
 get_next_moves(Player-Board, [CurrMove | T], Acc, NewMoves) :-
-    valid_moves_player(Player-Board-CurrMove, Player, NextJumps),
+    get_valid_jumps(Player-Board-CurrMove, Player, NextJumps),
     get_next_jumps(CurrMove, NextJumps, [], NewCurrMoves),
     append(NewCurrMoves, Acc, Acc1),
     get_next_moves(Player-Board, T, Acc1, NewMoves).
@@ -40,7 +41,11 @@ get_next_jumps(CurrMove, [], NewMoves, NewMoves).
 get_next_jumps(CurrMove, [CurrJump | T], Acc, NewMoves) :-
     get_next_jumps(CurrMove, T, [[CurrJump | CurrMove] | Acc], NewMoves).
 
-valid_moves_player(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+    is_human(Player),
+    get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
+
+get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :- 
     shape(Board, Rows, Columns),
     Rows1 is Rows - 1,
     Columns1 is Columns - 1,
@@ -67,7 +72,6 @@ move(Player-NextPlayer-Board-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-
 move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T],
         CurrCol-CurrRow-NextCol-NextRow,
         Player-NextPlayer-NewBoard-[NextCol-NextRow | T]) :-
-    
     \+ is_human(Player),
 
     get_value_at(Board, CurrRow, CurrCol, CurValue),
@@ -77,15 +81,12 @@ move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T],
 move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
         NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
-
     is_human(Player),
 
     valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow),
-
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
-    
     set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
-    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard), % Use empty
+    set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard),
     check_one_move_turn(Player-NextPlayer-Board-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-NewBoard-NewVisited).
 
 
@@ -95,7 +96,7 @@ move(Player-NextPlayer-Board-Visited, _, _) :-
     game_loop(Player-NextPlayer, Board, Visited).
 
 
-game_over(Player-Board-_, Winner):-
+game_over(Player-_-Board-_, Winner):-
     has_won(Board, white, WhiteWins),
     has_won(Board, black, BlackWins),
     my_piece(Player, Piece),
@@ -116,20 +117,25 @@ check_replay(_, y, _) :-
 check_replay(_, n, []) :-
     write('Thank you for playing!'), nl, !.
 
-choose_move(Player-_-Board-[], Player, 1, Turn) :-
-    valid_turns_robot(Player-Board, Player, ValidTurns),
-    random_member(Turn, ValidTurns).
+choose_move(Player-NewPlayer-Board-[], Player, 1, Move) :-
+    valid_moves(Player-NewPlayer-Board-[], Player, ValidMoves),
+    random_member(Move, ValidMoves).
 
-choose_move(Player-NextPlayer-Board-[], Player, 2, Turn) :-
-    valid_turns_robot(Player-Board, Player, ValidTurns),
-    setof(Value-Turn, (ValidTurns, NextPlayer, Board, Turn, Player)^(
-            member(Turn, ValidTurns),
-            value(Player-NextPlayer-Board-Turn, Player, Value)
-        ), EvaluatedTurns),
+choose_move(Player-NextPlayer-Board-[], Player, 2, Move) :-
+    valid_moves(Player-NextPlayer-Board-[], Player, ValidMoves),
+    setof(Value-Move, (ValidMoves, NextPlayer, Board, Player)^(
+            member(Move, ValidMoves),
+            value(Player-NextPlayer-Board-Move, Player, Value)
+        ), EvaluatedMoves),
 
-    reverse(EvaluatedTurns, [BestValue-BestTurn| T]), 
-    best_turns([BestValue-BestTurn | T], BestTurns, BestValue), 
-    random_member(Turn, BestTurns).
+    write('Line 131'), nl,
+    write(EvaluatedMoves), nl,
+
+    reverse(EvaluatedMoves, [BestValue-BestMove| T]), 
+    best_turns([BestValue-BestMove | T], BestMoves, BestValue),
+    write('Line 136'), nl,
+    write(BestMoves), nl,
+    random_member(Move, BestMoves).
 
 game_loop(_-_, [], _).
 
@@ -138,16 +144,12 @@ game_loop(Player-NextPlayer, Board, []) :-
     display_game(Player-NextPlayer-Board-[]),
     write('Please select the piece you wish to move.'), nl,
     read_pos(OrigColIndex-OriginRowIndex, true),
-    valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex). % TODO: check if user selected the right piece.
+    valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex).
 
 game_loop(Player-NextPlayer, Board, []) :-
-    % is_easy_pc(Player),
     \+ is_human(Player),
-    % valid_turns_robot(Player-Board, Player, ValidTurns),
     level(Player, Level),
     choose_move(Player-NextPlayer-Board-[], Player, Level, Turn),
-    %random_member(Turn, ValidTurns),
-    write(Turn), nl,
     game_loop(Player-NextPlayer, Board, Turn).
 
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
@@ -164,7 +166,7 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
 
-    game_over(Player-NewBoard-NewVisited, Winner),
+    game_over(Player-NewPlayer-NewBoard-NewVisited, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
 
@@ -184,7 +186,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 
     peek_char(_), clear_buffer,
 
-    game_over(Player-NewBoard-NewVisited, Winner),
+    game_over(Player-NewPlayer-NewBoard-NewVisited, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
     

@@ -68,7 +68,7 @@ switch_player(P1-P2, P2-P1).
 
 createPlayer(1, player_white-player_black).
 createPlayer(2, player_white-computer).
-createPlayer(3, computer-computer).
+createPlayer(3, computer-player_black).
 createPlayer(4, computer-computer).
 
 % Ask user the size of board and create it with appropriate rules.

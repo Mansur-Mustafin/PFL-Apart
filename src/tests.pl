@@ -37,9 +37,9 @@ get_board3(Board) :-
     ].
 
 get_board4(Board) :-
-    Board = [   [white, empty, white],
-                [white, empty, empty],
-                [white, white, white]
+    Board = [   [white, empty, white], 
+                [empty, white, empty], 
+                [white, empty, white]
     ].
 
 test_check_win_player:-

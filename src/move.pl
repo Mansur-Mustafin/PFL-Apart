@@ -2,9 +2,6 @@
 
 % valid_move(+GameState, ?Position)
 valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow) :-
-    % TODO: pode ir so 1 vez por 1.
-    % Note: Precisa de gerar os moves possiveis
-
     get_value_at(Board, NewPosRow, NewPosCol, Dest),
     \+ my_piece(Player, Dest),
 
@@ -16,7 +13,6 @@ valid_move(Player-Board-[CurrPosCol-CurrPosRow|T], CurrPosCol-CurrPosRow-NewPosC
 
 check_valid_jump([_ | []], _) :- !.
 
-% TODO: Onde estava o cut?
 check_valid_jump([SecondCol-SecondRow, FirstCol-FirstRow], Distance1) :-
     Distance1 > 1, !,
     get_direction(SecondCol-SecondRow, FirstCol-FirstRow, _, Distance),
@@ -28,7 +24,7 @@ check_valid_jump([_, _ | _], Distance) :-
 check_valid_piece(Player, Board, Col-Row) :-
     get_value_at(Board, Row, Col, Value),
     my_piece(Player, Value),
-    valid_moves_player(Player-Board-[Col-Row], Player, [_ | _]).
+    get_valid_jumps(Player-Board-[Col-Row], Player, [_ | _]).
 
 valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
     \+ is_none(Col),
@@ -40,7 +36,7 @@ valid_piece_choice(Player-NextPlayer, Board, _):-
     game_loop(Player-NextPlayer, Board, []).
 
 has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], true) :-
-    valid_moves_player(Player-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
+    valid_moves(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
 
 has_move(Player-NextPlayer, Board, _, false).
 
@@ -153,7 +149,6 @@ has_won(_, _, false).
 determine_winner(_, true, false, white).
 determine_winner(_, false, true, black).
 
-% Case if no winners TODO: erase if we want to fail this.
 determine_winner(_, false, false, none).
 
 % Aqui aquela regra se os 2 ganharam, quem fez movimento perca.
