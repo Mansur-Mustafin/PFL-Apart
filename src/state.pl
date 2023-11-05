@@ -9,16 +9,21 @@
 		visited: cells that have been visited in the current move (in a continuous jump).
 */
 % game_state(+Player, +Board, +VisitedList)
-game_state(FirstPlayer-SecondPlayer, _Board, []):-
+initial_state(FirstPlayer-SecondPlayer-Board-[]):-
+	get_mode(Lvl),
+	createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
+	choose_robot(TempFirstPlayer, white, FirstPlayer),
+	choose_robot(TempSecondPlayer, black, SecondPlayer),
+	get_board_size(NumCol-NumRow),
+	createBoard(NumCol-NumRow, Board).
+
+get_mode(Level) :-
 	write('Choose mode:'), nl,
 	write('Player vs Player........[1]'), nl,
 	write('Player vs Computer......[2]'), nl,
 	write('Computer vs Player......[3]'), nl,
 	write('Computer vs Computer....[4]'), nl,
-	read_number(Lvl, 1, 4),
-	createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
-	choose_robot(TempFirstPlayer, white, FirstPlayer),
-	choose_robot(TempSecondPlayer, black, SecondPlayer).
+	read_number(Level, 1, 4).
 
 choose_robot(computer, Color, Player) :- 
 	choose_robot_menu_header(Color),
@@ -27,7 +32,6 @@ choose_robot(computer, Color, Player) :-
 	set_robot(Difficulty, Color, Player), !.
 
 choose_robot(Player, _, Player).
->>>>>>> choose-difficulty
 
 is_none(none).
 is_empty(empty).
@@ -66,17 +70,10 @@ createPlayer(1, player_white-player_black).
 createPlayer(2, player_white-computer).
 createPlayer(3, computer-computer).
 createPlayer(4, computer-computer).
-createPlayer(5, player_white-hard_pc_black).
 
 % Ask user the size of board and create it with appropriate rules.
 % createBoard(+Board)
-createBoard(Board):-
-	% TODO: check the between() 4 < N < 26.
-	write('Please enter a size of board columns between 4 and 26: '), nl,
-	read_number(NumCol, 4, 26),
-	write('Please enter a size of board rows grater then 6: '), nl,
-	read_number(NumRow, 6, 50),
-
+createBoard(NumCol-NumRow, Board):-
 	SizeOfEmpty is NumRow - 4,
 	createListOfPieces(NumCol, white, WhitePieces),
 	createListOfPieces(NumCol, black, BlackPieces),
@@ -85,6 +82,11 @@ createBoard(Board):-
 	appendNTimes(L1, [empty|EmptyPieces], SizeOfEmpty, L2),
 	appendNTimes(L2, [empty|BlackPieces], 2, Board).
 
+get_board_size(NumCol-NumRow) :-
+	write('Please enter a size of board columns between 4 and 26: '), nl,
+	read_number(NumCol, 4, 26),
+	write('Please enter a size of board rows grater then 6: '), nl,
+	read_number(NumRow, 6, 50).
 
 % Create the list with Size - 1 of Pieces, but the lust piece is 'empty'.
 % createListOfPieces(+Size, -List, +Piece).

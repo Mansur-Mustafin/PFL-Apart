@@ -99,7 +99,7 @@ display_sequence_pieces([Piece|T]):-
 
 % Just print the titel (name of game).
 % display_titel/0
-display_titel:-
+display_title:-
 	write(' ========================='), nl,
 	write(' |                       |'), nl,
 	write(' |       A P A R T       |'), nl,

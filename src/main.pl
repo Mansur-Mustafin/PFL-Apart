@@ -191,7 +191,6 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
     game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited).
 
 play :-
-    display_titel,
-    createBoard(Board),
-    game_state(Player-NextPlayer, Board, Visited),
+    display_title,
+    initial_state(Player-NextPlayer-Board-Visited),
     game_loop(Player-NextPlayer, Board, Visited).
