@@ -36,6 +36,12 @@ get_board3(Board) :-
                 [empty, white, white, white, white, white, white, white, white, empty]  % 9
     ].
 
+get_board4(Board) :-
+    Board = [   [white, empty, white],
+                [white, empty, empty],
+                [white, white, white]
+    ].
+
 test_check_win_player:-
     % Test 1: No win state.
     Board1 = [	[white, black, white], 
