@@ -228,11 +228,11 @@ valid_piece_choice(Player-NextPlayer, Board, _, FirstMove) :-
 
 
 /*
-    has_move(+Player-NextPlayer, +Board, +Visited, -HasMove)
-    Descripton: has_move/4 unifies HasMove with true if there is a possible move from the current position
+    has_move(+Player-NextPlayer, +Board, +Visited, +FirstMove, -HasMove)
+    Descripton: has_move/5 unifies HasMove with true if there is a possible move from the current position
     of the Player current piece (whose position is the head of the list Visited). Unifies HasMove with false otherwise
 */
-has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], true) :-
-    valid_moves(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], Player, [_ | _]).
+has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], FirstMove, true) :-
+    valid_moves(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]-FirstMove, Player, [_ | _]).
 
-has_move(_, _, _, false).
+has_move(_, _, _, _, false).

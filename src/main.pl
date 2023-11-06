@@ -23,7 +23,7 @@
     the valid moves the player can perform, the positions that have already been visited and all
     the pieces in the board
 */
-display_game(CurrentPlayer-_-Board-Visited) :-
+display_game(CurrentPlayer-_-Board-Visited-_) :-
     display_player(CurrentPlayer),
     show_valid_moves(CurrentPlayer, Board, Visited, NewBoard1),
     process_visited(NewBoard1, Visited, true, NewBoard2),
@@ -34,7 +34,7 @@ display_game(CurrentPlayer-_-Board-Visited) :-
     initial_state(+BoardSize, -GameState).
     Description: initial_state/2 Unifies Board with matrix of pieces with dimensions NumCol and NumRow.
 */
-initial_state(NumCol-NumRow, FirstPlayer-SecondPlayer-Board-[]):-
+initial_state(NumCol-NumRow, _-_-Board-[]-true):-
     createBoard(NumCol-NumRow, Board).
 
 
@@ -87,14 +87,14 @@ move(Player-NextPlayer-Board-Visited-FirstMove, _, _) :-
     moves for a player. In case of a computer a move with be a sequence of jumps that represents
     its entire turn. In case of a human, a move is a single jump in its turn that may contain various jumps
 */
-valid_moves(Player-_-Board-_, Player, ValidTurns) :-
+valid_moves(Player-_-Board-_-_, Player, ValidTurns) :-
     \+ is_human(Player),
     find_all_pieces(Player, Board, ValidPieces),
     valid_moves_aux(Player-Board, ValidPieces, [], ValidTurnsAux1),
     maplist(add_end_turn, ValidTurnsAux1, ValidTurnsAux2),
     maplist(reverse, ValidTurnsAux2, ValidTurns).
 
-valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
+valid_moves(Player-_-Board-[CurrCol-CurrRow | T]-_, Player, ValidMoves) :-
     is_human(Player),
     get_valid_jumps(Player-Board-[CurrCol-CurrRow | T], Player, ValidMoves).
 
@@ -104,7 +104,7 @@ valid_moves(Player-_-Board-[CurrCol-CurrRow | T], Player, ValidMoves) :-
     Description: game_over/2 verifies if the game has ended. If that is the case, Winner is unified with
     the player that one the game. If no player won, Winner is unified with 'none'
 */
-game_over(Player-_-Board-_, Winner):-
+game_over(Player-_-Board-_-_, Winner):-
     has_won(Board, white, WhiteWins),
     has_won(Board, black, BlackWins),
     my_piece(Player, Piece),
@@ -119,7 +119,7 @@ game_over(Player-_-Board-_, Winner):-
     amount of enemy pieces that were captured and the amount of separate groups of adjacent enemy pieces that
     were formed by eating enemy pieces
 */
-value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
+value(Player-_-Board-[FirstCol-FirstRow | T]-_, Player, Value) :-
     get_number_of_separate_pieces(Board, Player, Nbefore),
     set_value_at(Board, FirstRow, FirstCol, empty, NewBoard),
     process_turn(T, NewBoard, Player, InfluenceRate, NewBoard2), !,
@@ -136,21 +136,44 @@ value(Player-_-Board-[FirstCol-FirstRow | T], Player, Value) :-
 */
 
 % Random computer
-choose_move(Player-NewPlayer-Board-[], Player, 1, Move) :-
-    valid_moves(Player-NewPlayer-Board-[], Player, ValidMoves),
-    random_member(Move, ValidMoves).
+choose_move(Player-NewPlayer-Board-[]-FirstMove, Player, 1, Move) :-
+    valid_moves(Player-NewPlayer-Board-[]-FirstMove, Player, ValidMoves),
+    filter_first_move(ValidMoves, FirstMove, FilteredValidMoves),
+    random_member(Move, FilteredValidMoves).
 
 % Greedy computer
-choose_move(Player-NextPlayer-Board-[], Player, 2, Move) :-
-    valid_moves(Player-NextPlayer-Board-[], Player, ValidMoves),
+choose_move(Player-NextPlayer-Board-[]-FirstMove, Player, 2, Move) :-
+    valid_moves(Player-NextPlayer-Board-[]-FirstMove, Player, ValidMoves),
     setof(Value-Move, (ValidMoves, NextPlayer, Board, Player)^(
             member(Move, ValidMoves),
-            value(Player-NextPlayer-Board-Move, Player, Value)
+            value(Player-NextPlayer-Board-Move-FirstMove, Player, Value)
         ), EvaluatedMoves),
 
     reverse(EvaluatedMoves, [BestValue-BestMove| T]), 
     best_turns([BestValue-BestMove | T], BestMoves, BestValue),
-    random_member(Move, BestMoves).
+    filter_first_move(BestMoves, FirstMove, FilteredBestMoves),
+    random_member(Move, FilteredBestMoves).
+
+
+/*
+    filter_first_move(+Moves, +FirstMove, -FilteredMoves)
+    Description: filter_first_move/3 unifies FilteredMoves with a list of moves from Moves
+    that only jump once if it is the first move of the game, that is, it doesnt engage on a continuous jump
+*/
+filter_first_move(L, false, L).
+filter_first_move(L, true, L1) :- filter_first_move_aux(L, [], L1).
+
+filter_first_move_aux([], L1, L1).
+
+filter_first_move_aux([CurrList | T], Acc, L1) :- 
+    length(CurrList, 3),
+    filter_first_move_aux(T, [CurrList | Acc], L1).
+
+filter_first_move_aux([CurrList | T], Acc, L1) :- 
+    length(CurrList, Len),
+    Len \= 3,
+    filter_first_move_aux(T, Acc, L1).
+    
 
 /*
     game_loop(+Player-NextPlayer, +Board, +Visited)
@@ -164,7 +187,7 @@ game_loop(_-_, [], _, _).
 % Human player chooses its next move
 game_loop(Player-NextPlayer, Board, [], FirstMove) :-
     is_human(Player),
-    display_game(Player-NextPlayer-Board-[]),
+    display_game(Player-NextPlayer-Board-[]-FirstMove),
     write('Please select the piece you wish to move.'), nl,
     read_pos(OrigColIndex-OriginRowIndex, true),
     valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex, FirstMove).
@@ -173,30 +196,25 @@ game_loop(Player-NextPlayer, Board, [], FirstMove) :-
 game_loop(Player-NextPlayer, Board, [], FirstMove) :-
     \+ is_human(Player),
     level(Player, Level),
-    choose_move(Player-NextPlayer-Board-[], Player, Level, Turn),
+    choose_move(Player-NextPlayer-Board-[]-FirstMove, Player, Level, Turn),
     game_loop(Player-NextPlayer, Board, Turn, FirstMove).
 
 % Human player performs its move
 game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], FirstMove) :-
     is_human(Player),
 
-    display_game(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]),
+    display_game(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]-FirstMove),
 
-    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], HasMove),
+    has_move(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], FirstMove, HasMove),
 
     write('Now, choose your destination on the board.'), nl,
     read_pos(NewPosCol-NewPosRow, HasMove),
-    
-    write('195'), nl,
 
     move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]-FirstMove, 
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove),
 
-    write('201'), nl,
-
-
-    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),
+    game_over(Player-NextPlayer-NewBoard-NewVisited-FirstMove, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
 
@@ -210,14 +228,14 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T], First
             CurrCol-CurrRow-NextCol-NextRow, 
             NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove),
 
-    display_game(Player-NextPlayer-NewBoard-[]),
+    display_game(Player-NextPlayer-NewBoard-[]-FirstMove),
     display_pc_move(Player, CurrCol-CurrRow, NextCol-NextRow),
 
     nl, write('Enter anything to continue: '), nl,
 
     peek_char(_), clear_buffer,
 
-    game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),
+    game_over(Player-NextPlayer-NewBoard-NewVisited-FirstMove, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
     
@@ -232,5 +250,5 @@ play :-
     display_title,
     create_players(Player-NextPlayer),
     get_board_size(NumCol-NumRow),
-    initial_state(NumCol-NumRow, Player-NextPlayer-Board-Visited),
-    game_loop(Player-NextPlayer, Board, Visited, true).
+    initial_state(NumCol-NumRow, Player-NextPlayer-Board-Visited-FirstMove),
+    game_loop(Player-NextPlayer, Board, Visited, FirstMove).
