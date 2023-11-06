@@ -108,7 +108,7 @@ end_game(Board, Winner, NewBoard) :-
 /*
     check_replay(+Desision, -NewBoard).
     Description: check_replay/2 Determines the NewBoard based on the player's decision,
-                 unifyed NewBoard with empty list to stop the all game (handled in game_loop).
+                 unified NewBoard with empty list to stop the all game (handled in game_loop).
 */
 check_replay(y, _) :-
     play.
