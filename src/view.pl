@@ -31,8 +31,8 @@ selected_piece(white, white_selected).
 
 
 /*
-	display_titel/0
-	Description: display_titel/0 Prints the game title on the output.
+	display_title/0
+	Description: display_title/0 Prints the game title on the output.
 */
 display_title:-
 	write(' ========================='), nl,
@@ -81,10 +81,8 @@ process_visited(Board, [Col-Row|T], false, NewBoard):-
 	show_valid_moves(+Player, +Board, +Visited, -NewBoard)
 	Description: show_valid_moves/4 Unifies the NewBoard with Board with showed the possible moves of Human player. 
 */
-% If Visited is empty, just unify NewBoard with Board (no change).
 show_valid_moves(_, Board, [], Board) :- !.
 
-% If Player is not human, unify NewBoard with Board (no change).
 show_valid_moves(Player, Board, _, Board) :- \+ is_human(Player), !.
 
 % Case for a human Player with non-empty Visited: calculate and show valid moves on NewBoard.
@@ -92,11 +90,11 @@ show_valid_moves(Player, Board, Visited, NewBoard) :-
 	get_valid_jumps(Player-Board-Visited, Player, ValidMoves),
 	process_valid_moves(ValidMoves, Board, NewBoard).
 
+
 /*
 	process_valid_moves(+ValidMoves, +Board, -NewBoard)
 	Description: process_valid_moves/3 Processes all valid moves and marks squares as 'valid' or 'valid_eat'.
 */
-% Base case: unify NewBoard with the current Board, if no more valid moves.
 process_valid_moves([], NewBoard, NewBoard).
 
 % If the current square is to an empty square, mark it as 'valid'.
@@ -154,12 +152,10 @@ draw_board_map([H|T], CurVal, NRow, NCol):-
 	display_sequence_letters(+Cur, +Len)
 	Description: display_sequence_letters/2 Displays a sequence of capital letters starting from Cur up to Len, representing column headers.
 */
-% Base case: when Cur equals Len, display the last letter and a newline.
 display_sequence_letters(Len, Len):-
 	Char is Len + 64,
 	put_code(Char), nl.
 
-% Recursive case: for Cur less than Len, display the current letter and continue.
 display_sequence_letters(Cur, Len):-
 	Char is Cur + 64,
 	put_code(Char), write('   '),
@@ -171,11 +167,9 @@ display_sequence_letters(Cur, Len):-
 	display_sequence_pieces(+RowOfPieces)
 	Description: display_sequence_pieces/1 Displays the pieces in a given row, formatted within grid cells.
 */
-% Base case: When there are no more pieces to display, close the row
 display_sequence_pieces([]):-
 	write('|'), nl.
 
-% Recursive case: For each Piece in the list, display it within the grid cell
 display_sequence_pieces([Piece|T]):-
 	write('| '),
 	display_piece(Piece),
@@ -187,11 +181,9 @@ display_sequence_pieces([Piece|T]):-
 	draw_between_line(+Cur, +Len)
 	Description: draw_between_line/2 Draws a horizontal line with sections between pieces for a board grid
 */
-% Base case: At the end draw the last section of the line.
 draw_between_line(Len, Len):-
 	write('|---|'), nl.
 
-% Recursive case: For the current position, draw a section of the line and recurse for the next section.
 draw_between_line(Cur, Len):-
 	Cur < Len,
 	write('|---'),
@@ -267,11 +259,9 @@ print_winner(black):-
 	writeNumber(+Number).
 	Description: writeNumber/1 Prints the given Number with appropriate margin spacing. 
 */
-% Case for single-digit numbers.
 writeNumber(X):-
 	X < 10,
 	write(X), write('  '), !.
 
-% Case for numbers 10 or greater.
 writeNumber(X):-
 	write(X), write(' ').

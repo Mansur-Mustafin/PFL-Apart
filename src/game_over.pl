@@ -68,10 +68,8 @@ check_win_player_lists([_, H2|[]], [H3, H4|[]], Piece, false):-
     check_single_row(+List, +Piece).
     Description: Checks if a single row (List) does not contain a sequence of a given Piece.
 */
-% Case of the last element in the list
 check_single_row([_], _).
 
-% Recursive case: Check 2 elements are not the same pieces in the row.
 check_single_row([H1, H2|T], Piece):-
     \+ same_piece(H1, H2, Piece),
     check_single_row([H2|T], Piece).
@@ -81,11 +79,9 @@ check_single_row([H1, H2|T], Piece):-
     determine_winner(+Piece, +FirstPlayerWon, +SecondPlayerWon, -Winner).
     Description: determine_winner/4 Determines the game's winner based on the victory status of each player.
 */
-% Cases if one of players wins.
 determine_winner(_, true, false, white).
 determine_winner(_, false, true, black).
 
-% Case where neither player has won.
 determine_winner(_, false, false, none).
 
 % Case where both players have a winning sequence.
@@ -98,10 +94,8 @@ determine_winner(black, true, true, white).
     Description: end_game/3 Handles the end of the game by displaying the final board, 
                 announcing the winner, and asking play again or exit.
 */
-% Case where there is no winner Board has no changes.
 end_game(Board, none, Board) :- !.
 
-% Case where there is a winner, game ends.
 end_game(Board, Winner, NewBoard) :-
     display_board(Board),
     print_winner(Winner),
@@ -113,12 +107,11 @@ end_game(Board, Winner, NewBoard) :-
 
 /*
     check_replay(+Desision, -NewBoard).
-    Description: check_replay/2 Determines the NewBoard based on the player's decision
+    Description: check_replay/2 Determines the NewBoard based on the player's decision,
+                 unifyed NewBoard with empty list to stop the all game (handled in game_loop).
 */
-% Case: the player decides to play again.
 check_replay(y, _) :-
     play.
 
-% Case: the player decides not to play again. 
 check_replay(n, []) :-
     write('Thank you for playing!'), nl, !.
