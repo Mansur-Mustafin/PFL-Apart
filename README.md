@@ -69,6 +69,7 @@ Possible representations of pieces:
 - x - position that was already visited in the current turn.
 
 * Initial state:
+```
 Turn of player playing white              
      A   B   C   D   E
    |---|---|---|---|---|
@@ -87,9 +88,10 @@ Turn of player playing white
 Please select the piece you wish to move.
 Enter a valid position in this format Column-Row: 
 C-5
+```
 
 * First move after selecting a piece:
-
+```
 Turn of player playing white
      A   B   C   D   E
    |---|---|---|---|---|
@@ -108,8 +110,10 @@ Turn of player playing white
 Now, choose your destination on the board.
 Enter a valid position in this format Column-Row: 
 E-2
+```
 
 * Continuous jump:
+```
 Turn of player playing white
      A   B   C   D   E
    |---|---|---|---|---|
@@ -129,8 +133,10 @@ Now, choose your destination on the board.
 Enter a valid position in this format Column-Row:   
 |:                                                                     
 You chose to stop your movement. It's the next player's turn now.      
+```
 
 * End of the game
+```
      A   B   C   D   E
    |---|---|---|---|---|
 1  |   |   | b | w | b |
@@ -151,6 +157,7 @@ n
 Thank you for playing!
 true ? 
 yes
+```
 
 ### Game State Visualization:
 The files `io.pl` and `view.pl` contain all prints and menus of game. <br> <br>
