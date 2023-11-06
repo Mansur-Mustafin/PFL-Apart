@@ -60,13 +60,20 @@ For a detailed overview of the rules and gameplay mechanics, visit the following
 - We store the `Visited` list of positions that were already visited in the case of a human player's turn or a list with the jumps that a computer player will execute on its turn. <br> <br>
 - Becouse of the rule `The first move of the first player cannot be a continuous jump`, we also store `FirstMove` that indicate if the move is first of first player. <br> <br>
 
+Possible representations of pieces:
+- b - represents the black piece 
+- w - represents the white piece
+- W - selected piece to make the next jump.
+- o - empty position where I can move my selected piece.
+- O - enemy piece that I can eat with my selected piece.
+- x - position that was already visited in the current turn.
+
 * Initial state:
-```
 Turn of player playing white              
      A   B   C   D   E
    |---|---|---|---|---|
-1  |   | b | b | b |   |                                              % b - represents the black piece 
-   |---|---|---|---|---|                                              % w - represents the white piece
+1  |   | b | b | b |   |                                              
+   |---|---|---|---|---|                                              
 2  |   | b | b | b |   |
    |---|---|---|---|---|
 3  |   |   |   |   |   |
@@ -80,16 +87,16 @@ Turn of player playing white
 Please select the piece you wish to move.
 Enter a valid position in this format Column-Row: 
 C-5
-```
+
 * First move after selecting a piece:
-```
+
 Turn of player playing white
      A   B   C   D   E
    |---|---|---|---|---|
 1  |   |   | b | b |   |
-   |---|---|---|---|---|                                          % W - selected piece to make the next jump.
-2  | b |   |   | O | o |                                          % o - empty position where I can move my selected piece.
-   |---|---|---|---|---|                                          % O - enemy piece that I can eat with my selected piece. 
+   |---|---|---|---|---|                                          
+2  | b |   |   | O | o |                                          
+   |---|---|---|---|---|                                           
 3  |   | w |   | o | W |
    |---|---|---|---|---|
 4  |   | b |   | o | O |
@@ -101,9 +108,8 @@ Turn of player playing white
 Now, choose your destination on the board.
 Enter a valid position in this format Column-Row: 
 E-2
-```
+
 * Continuous jump:
-```
 Turn of player playing white
      A   B   C   D   E
    |---|---|---|---|---|
@@ -115,18 +121,16 @@ Turn of player playing white
    |---|---|---|---|---|
 4  |   | b |   |   | b |
    |---|---|---|---|---|
-5  | w | o |   | x |   |                                               % x - position that was already visited in the current turn.
+5  | w | o |   | x |   |                                               
    |---|---|---|---|---|
 6  |   |   | w | w |   |
    |---|---|---|---|---|
 Now, choose your destination on the board.
 Enter a valid position in this format Column-Row:   
-|:                                                                     % we stop our round
-You chose to stop your movement. It's the next player's turn now.      % and now is the round of second player.
-```
+|:                                                                     
+You chose to stop your movement. It's the next player's turn now.      
 
-* End of game
-```
+* End of the game
      A   B   C   D   E
    |---|---|---|---|---|
 1  |   |   | b | w | b |
@@ -147,7 +151,6 @@ n
 Thank you for playing!
 true ? 
 yes
-```
 
 ### Game State Visualization:
 The files `io.pl` and `view.pl` contain all prints and menus of game. <br> <br>
@@ -181,9 +184,9 @@ In our program we handle all possible input errors given by the users by asking 
 Now, choose your destination on the board.
                                                                                                                  
 Enter a valid position in this format Column-Row: 
-hello world                                               % incorrect input                                                                                                                                                      
+hello world                                                                                                                                                                                                 
 Enter a valid position in this format Column-Row: 
-A-6                                                       % valid piece                                                                                                                                                           
+A-6                                                                                                                                                                                                                
 Turn of player playing black
      A   B   C   D
    |---|---|---|---|
