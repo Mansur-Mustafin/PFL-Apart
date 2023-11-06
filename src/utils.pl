@@ -77,7 +77,7 @@ get_board_index(ColIndex-RowIndex, BoardCol-BoardRow) :-
 	BoardRow is RowIndex + 1.
 
 
-/* TODO: trocar a ordem de Result e Value
+/*
     best_turns(+List, -Result, +Value)
     Description: best_turns/3 given List, a list of pairs in the form Value-Turn, unifies Result with a list of turns
     associated with the value Value. List must be sorted in descending order of value and Value is the highest value
