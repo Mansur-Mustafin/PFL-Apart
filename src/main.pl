@@ -19,8 +19,8 @@ display_game(CurrentPlayer-_-Board-Visited) :-
 initial_state(FirstPlayer-SecondPlayer-Board-[]):-
     get_mode(Lvl),
     createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
-    choose_robot(TempFirstPlayer, white, FirstPlayer),
-    choose_robot(TempSecondPlayer, black, SecondPlayer),
+    choose_computer(TempFirstPlayer, white, FirstPlayer),
+    choose_computer(TempSecondPlayer, black, SecondPlayer),
     get_board_size(NumCol-NumRow),
     createBoard(NumCol-NumRow, Board).
 
