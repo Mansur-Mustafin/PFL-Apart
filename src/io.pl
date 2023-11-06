@@ -3,7 +3,7 @@
 /*
     File: io.pl
     Description: 
-    This file contain all predicates that interact with the user by
+    This file contains all predicates that interact with the user by
     prompting him to input information or printing the game's information.
 */
 
