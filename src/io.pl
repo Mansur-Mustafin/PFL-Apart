@@ -169,8 +169,19 @@ get_mode(Mode) :-
 	the user writes as input
 */
 get_board_size(NumCol-NumRow) :-
-	write('Please enter a size of board columns between 4 and 26: '), nl,
-	read_number(NumCol, 4, 26),
-	write('Please enter a size of board rows grater then 6: '), nl,
-	read_number(NumRow, 6, 50).
+	write('Please enter a size of board columns between 4 and 15: '), nl,
+	read_number(NumCol, 4, 15),
+	write('Please enter a size of board rows between 6 and 15: '), nl,
+	read_number(NumRow, 6, 15).
 
+
+/*
+	create_players(-FirstPlayer-SecondPlayer)
+	Description: create_players/1 unifies FirstPlayer and SecondPlayer with players
+	according to chosen mode.
+*/
+create_players(FirstPlayer-SecondPlayer):-
+    get_mode(Lvl),
+    createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
+    choose_computer(TempFirstPlayer, white, FirstPlayer),
+    choose_computer(TempSecondPlayer, black, SecondPlayer).

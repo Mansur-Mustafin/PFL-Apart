@@ -31,15 +31,10 @@ display_game(CurrentPlayer-_-Board-Visited) :-
 
 
 /*
-    initial_state(-GameState)
-
+    initial_state(+BoardSize, -GameState).
+    Description: initial_state/2 Unifies Board with matrix of pieces with dimensions NumCol and NumRow.
 */
-initial_state(FirstPlayer-SecondPlayer-Board-[]):-
-    get_mode(Lvl),
-    createPlayer(Lvl, TempFirstPlayer-TempSecondPlayer),
-    choose_computer(TempFirstPlayer, white, FirstPlayer),
-    choose_computer(TempSecondPlayer, black, SecondPlayer),
-    get_board_size(NumCol-NumRow),
+initial_state(NumCol-NumRow, FirstPlayer-SecondPlayer-Board-[]):-
     createBoard(NumCol-NumRow, Board).
 
 
@@ -235,5 +230,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T], First
 */
 play :-
     display_title,
-    initial_state(Player-NextPlayer-Board-Visited),
+    create_players(Player-NextPlayer),
+    get_board_size(NumCol-NumRow),
+    initial_state(NumCol-NumRow, Player-NextPlayer-Board-Visited),
     game_loop(Player-NextPlayer, Board, Visited, true).
