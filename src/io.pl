@@ -178,7 +178,7 @@ get_board_size(NumCol-NumRow) :-
 /*
 	create_players(-FirstPlayer-SecondPlayer)
 	Description: create_players/1 unifies FirstPlayer and SecondPlayer with players
-	according to choosen mode.
+	according to chosen mode.
 */
 create_players(FirstPlayer-SecondPlayer):-
     get_mode(Lvl),

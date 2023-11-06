@@ -32,8 +32,7 @@ display_game(CurrentPlayer-_-Board-Visited) :-
 
 /*
     initial_state(+BoardSize, -GameState).
-    Description: initial_state/2 Create the Board 
-
+    Description: initial_state/2 Unifies Board with matrix of pieces with dimensions NumCol and NumRow.
 */
 initial_state(NumCol-NumRow, FirstPlayer-SecondPlayer-Board-[]):-
     createBoard(NumCol-NumRow, Board).
