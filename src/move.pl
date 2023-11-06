@@ -129,11 +129,15 @@ check_valid_jump([_, _ | _], Distance) :-
     If so, he cannot move more and the next player will be the next one to play. If not, the current player's turn
     continues
 */
-check_one_move_turn(Player-NextPlayer-_-[], CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-_-[]) :-
+
+check_one_move_turn(Player-NextPlayer-_-[]-true, _-_-_-_, NewCurPlayer-NewNextPlayer-_-[]-false) :-
+    switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer).
+
+check_one_move_turn(Player-NextPlayer-_-[]-FirstMove, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-_-[]-FirstMove) :-
     get_direction(CurrPosCol-CurrPosRow, NewPosCol-NewPosRow, _, 1),
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer).
 
-check_one_move_turn(Player-NextPlayer-_-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, Player-NextPlayer-_-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]).
+check_one_move_turn(Player-NextPlayer-_-T-FirstMove, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, Player-NextPlayer-_-[NewPosCol-NewPosRow, CurrPosCol-CurrPosRow|T]-FirstMove).
 
 
 /*
@@ -213,14 +217,14 @@ check_valid_piece(Player, Board, Col-Row) :-
     Description: valid_piece_choice checks if the piece chosen by Player in position Pos is valid or not.
     If it is we let the player continue its turn by moving the piece. If not, he will have to pick the piece again
 */
-valid_piece_choice(Player-NextPlayer, Board, Col-Row):-
+valid_piece_choice(Player-NextPlayer, Board, Col-Row, FirstMove):-
     \+ is_none(Col),
     check_valid_piece(Player, Board, Col-Row),
-    game_loop(Player-NextPlayer, Board, [Col-Row]).
+    game_loop(Player-NextPlayer, Board, [Col-Row], FirstMove).
 
-valid_piece_choice(Player-NextPlayer, Board, _):-
+valid_piece_choice(Player-NextPlayer, Board, _, FirstMove) :-
     write('Please choose again.'), nl,
-    game_loop(Player-NextPlayer, Board, []).
+    game_loop(Player-NextPlayer, Board, [], FirstMove).
 
 
 /*

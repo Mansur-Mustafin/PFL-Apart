@@ -49,14 +49,14 @@ initial_state(FirstPlayer-SecondPlayer-Board-[]):-
 */
 
 % Case where the player has chosen to stop moving
-move(Player-NextPlayer-Board-[_, _ | _], _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]) :-
+move(Player-NextPlayer-Board-[_, _ | _]-_, _-_-none-none, NewCurPlayer-NewNextPlayer-Board-[]-false) :-
     switch_player(Player-NextPlayer, NewCurPlayer-NewNextPlayer),
     write('You chose to stop your movement. It\'s the next player\'s turn now.'), nl.
 
 % Case where the player is a computer
-move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T],
+move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T]-FirstMove,
         CurrCol-CurrRow-NextCol-NextRow,
-        Player-NextPlayer-NewBoard-[NextCol-NextRow | T]) :-
+        Player-NextPlayer-NewBoard-[NextCol-NextRow | T]-FirstMove) :-
     \+ is_human(Player),
 
     get_value_at(Board, CurrRow, CurrCol, CurValue),
@@ -64,9 +64,9 @@ move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T],
     set_value_at(TempBoard, CurrRow, CurrCol, empty, NewBoard).
 
 % Case where the player is a human
-move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]-FirstMove, 
         CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
-        NewCurPlayer-NewNextPlayer-NewBoard-NewVisited) :-
+        NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove) :-
     is_human(Player),
     \+ is_none(NewPosCol),
     \+ is_none(NewPosRow),
@@ -75,13 +75,15 @@ move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T],
     get_value_at(Board, CurrPosRow, CurrPosCol, CurValue),
     set_value_at(Board, NewPosRow, NewPosCol, CurValue, TempBoard),
     set_value_at(TempBoard, CurrPosRow, CurrPosCol, empty, NewBoard),
-    check_one_move_turn(Player-NextPlayer-Board-T, CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, NewCurPlayer-NewNextPlayer-NewBoard-NewVisited).
+    check_one_move_turn(Player-NextPlayer-Board-T-FirstMove, 
+                        CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
+                        NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove).
 
 % Case where the move that was input is not valid
-move(Player-NextPlayer-Board-Visited, _, _) :-
+move(Player-NextPlayer-Board-Visited-FirstMove, _, _) :-
     is_human(Player),
     write('Oops! That move is not valid. Please try again.'), nl,
-    game_loop(Player-NextPlayer, Board, Visited).
+    game_loop(Player-NextPlayer, Board, Visited, FirstMove).
 
 
 /*
@@ -162,25 +164,25 @@ choose_move(Player-NextPlayer-Board-[], Player, 2, Move) :-
 */
 
 % Game has ended and user doesn't want to play more
-game_loop(_-_, [], _).
+game_loop(_-_, [], _, _).
 
 % Human player chooses its next move
-game_loop(Player-NextPlayer, Board, []) :-
+game_loop(Player-NextPlayer, Board, [], FirstMove) :-
     is_human(Player),
     display_game(Player-NextPlayer-Board-[]),
     write('Please select the piece you wish to move.'), nl,
     read_pos(OrigColIndex-OriginRowIndex, true),
-    valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex).
+    valid_piece_choice(Player-NextPlayer, Board, OrigColIndex-OriginRowIndex, FirstMove).
 
 % Computer player chooses its next move
-game_loop(Player-NextPlayer, Board, []) :-
+game_loop(Player-NextPlayer, Board, [], FirstMove) :-
     \+ is_human(Player),
     level(Player, Level),
     choose_move(Player-NextPlayer-Board-[], Player, Level, Turn),
-    game_loop(Player-NextPlayer, Board, Turn).
+    game_loop(Player-NextPlayer, Board, Turn, FirstMove).
 
 % Human player performs its move
-game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
+game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T], FirstMove) :-
     is_human(Player),
 
     display_game(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]),
@@ -190,23 +192,28 @@ game_loop(Player-NextPlayer, Board, [CurrPosCol-CurrPosRow|T]) :-
     write('Now, choose your destination on the board.'), nl,
     read_pos(NewPosCol-NewPosRow, HasMove),
     
-    move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T], 
+    write('195'), nl,
+
+    move(Player-NextPlayer-Board-[CurrPosCol-CurrPosRow|T]-FirstMove, 
             CurrPosCol-CurrPosRow-NewPosCol-NewPosRow, 
-            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
+            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove),
+
+    write('201'), nl,
+
 
     game_over(Player-NextPlayer-NewBoard-NewVisited, Winner),
 
     end_game(NewBoard, Winner, NewBoard1),
 
-    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited).
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited, NewFirstMove).
 
 % Computer player performs its move
-game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
+game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T], FirstMove) :-
     \+ is_human(Player),
 
-    move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T],
+    move(Player-NextPlayer-Board-[CurrCol-CurrRow, NextCol-NextRow | T]-FirstMove,
             CurrCol-CurrRow-NextCol-NextRow, 
-            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited),
+            NewCurPlayer-NewNextPlayer-NewBoard-NewVisited-NewFirstMove),
 
     display_game(Player-NextPlayer-NewBoard-[]),
     display_pc_move(Player, CurrCol-CurrRow, NextCol-NextRow),
@@ -219,7 +226,7 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 
     end_game(NewBoard, Winner, NewBoard1),
     
-    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited).
+    game_loop(NewCurPlayer-NewNextPlayer, NewBoard1, NewVisited, NewFirstMove).
 
 
 /*
@@ -229,4 +236,4 @@ game_loop(Player-NextPlayer, Board, [CurrCol-CurrRow, NextCol-NextRow| T]) :-
 play :-
     display_title,
     initial_state(Player-NextPlayer-Board-Visited),
-    game_loop(Player-NextPlayer, Board, Visited).
+    game_loop(Player-NextPlayer, Board, Visited, true).
