@@ -189,11 +189,11 @@ In our program we handle all possible input errors given by the users by asking 
 
 ```
 Now, choose your destination on the board.
-                                                                                                                 
+
+Enter a valid position in this format Column-Row:
+hello world
 Enter a valid position in this format Column-Row: 
-hello world                                                                                                                                                                                                 
-Enter a valid position in this format Column-Row: 
-A-6                                                                                                                                                                                                                
+A-6
 Turn of player playing black
      A   B   C   D
    |---|---|---|---|
