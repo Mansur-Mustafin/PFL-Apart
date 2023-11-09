@@ -250,5 +250,5 @@ Additionally, applying machine learning algorithms to train the computer to play
 We could also give the decision to cancel a certain move to the player if he misstypes any move.
 
 ## Bibliography
-[Manual SICStus HTML] (https://sicstus.sics.se/sicstus/docs/latest4/html/sicstus.html/)
-[Manual SICStus PDF] (https://sicstus.sics.se/sicstus/docs/latest4/pdf/sicstus.pdf)
+[Manual SICStus HTML](https://sicstus.sics.se/sicstus/docs/latest4/html/sicstus.html/) <br>
+[Manual SICStus PDF](https://sicstus.sics.se/sicstus/docs/latest4/pdf/sicstus.pdf)
