@@ -2,8 +2,9 @@
 
 ## Group : Apart_1
 * Members:
-  * up202108771 - Daniel dos Santos Ferreira - 50%
-  * up202102355 - Mansur Mustafin - 50%
+  * [Daniel dos Santos Ferreira](https://github.com/dsantosferreira) - up202108771
+  * [Mansur Mustafin](https://github.com/Mansur-Mustafin) - up202102355
+* Grade 19.67 / 20 
 
 ## Installation and Execution:
 If you have not installed SICStus on yor pc use [manual](http://sicstus.sics.se/sicstus/products4/). <br>
